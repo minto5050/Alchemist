@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Charithranweshikal</string>
+    <string name="facebook_app_id">1000234670061157</string>
+
+    <string name="title_activity_splash_screen">SplashScreen</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">ചരിത്രാന്വേഷികൾ</string>
+</resources>
