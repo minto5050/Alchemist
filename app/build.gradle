@@ -33,6 +33,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.facebook.android:facebook-android-sdk:4.10.0'
     compile 'com.google.code.gson:gson:2.4'
+    compile 'com.github.nirhart:parallaxscroll:1.0'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.commonsware.cwac:endless:1.2.3'

@@ -1,6 +1,7 @@
 package in.co.geekninja.charithranweshikal;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,16 +34,22 @@ public class SplashScreen extends AppCompatActivity  implements FacebookCallback
     private CallbackManager callbackManager;
     private Button loginButton;
     private GoogleApiClient client;
+    SharedPreferences sharedPreferences;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+        if (sweetAlertDialog==null)
+            sweetAlertDialog=new SweetAlertDialog(SplashScreen.this,SweetAlertDialog.NORMAL_TYPE);
+        sharedPreferences=getSharedPreferences("Chari",MODE_PRIVATE);
+        token=sharedPreferences.getString("token","NoN");
         TextView tv=(TextView)findViewById(R.id.fullscreen_content);
         tv.setTypeface(Boilerplate.getFontPrimary());
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
-        loginButton = (Button) findViewById(R.id.login_button);
+        loginButton = (Button) findViewById(R.id.connect_facebook);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,6 +58,7 @@ public class SplashScreen extends AppCompatActivity  implements FacebookCallback
         });
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         LoginManager.getInstance().registerCallback(callbackManager, this);
+        loginButton.setVisibility(View.GONE);
         new Handler().postDelayed(new Runnable() {
 
             /*
@@ -62,8 +70,19 @@ public class SplashScreen extends AppCompatActivity  implements FacebookCallback
             public void run() {
                 // This method will be executed once the timer is over
                 // Start your app main activity
+                if (!token.equals("NoN"))
+                {
+                    Intent intent = new Intent(SplashScreen.this, FeedsActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+                else
+                {
+                 loginButton.setVisibility(View.VISIBLE);
+                }
 
-                finish();
+
             }
         }, 3000);
     }

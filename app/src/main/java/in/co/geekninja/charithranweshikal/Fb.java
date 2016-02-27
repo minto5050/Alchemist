@@ -10,6 +10,22 @@ import retrofit.http.Query;
  */
 public interface Fb  {
     @GET("/feed")
-    void feed(@Query("fields")String fields,@Query("access_token")String access_token, Callback<Graphfeed> callback);
-    @GET("/feed") void previous(@Query("fields")String fields,@Query("format")String format,@Query("access_token")String access_token,@Query("since")String since,@Query("__previous")int previous, Callback<Graphfeed> callback);
+    void feed(@Query("fields")String fields,
+              @Query("access_token")String access_token,
+              Callback<Graphfeed> callback);
+    @GET("/feed")
+    void previous(@Query("fields")String fields,
+                  @Query("format")String format,
+                  @Query("access_token")String access_token,
+                  @Query("since")String since,
+                  @Query("__previous")int previous,
+                  Callback<Graphfeed> callback);
+    @GET("/feed")
+    void next(@Query("fields")String fields,
+              @Query("format")String format,
+              @Query("access_token")String access_token,
+              @Query("limit") String limit,
+              @Query("until")String untill,
+              @Query("__paging_token")String paging_token,
+              Callback<Graphfeed> callback);
 }

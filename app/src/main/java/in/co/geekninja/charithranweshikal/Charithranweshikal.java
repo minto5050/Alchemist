@@ -1,7 +1,6 @@
 package in.co.geekninja.charithranweshikal;
 
 import android.app.Application;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Environment;
@@ -25,12 +24,7 @@ public class Charithranweshikal extends Application {
             outFile.mkdirs();
             Boilerplate.copyAssets(Charithranweshikal.this);
         }
-        if (!sharedPreferences.getString("token","NoN").equals("NoN"))
-        {
-            Intent intent = new Intent(Charithranweshikal.this, FeedsActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            //startActivity(intent);
-        }
+
     }
 
     @Override

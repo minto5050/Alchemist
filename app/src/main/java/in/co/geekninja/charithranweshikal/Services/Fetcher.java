@@ -4,12 +4,16 @@ import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import in.co.geekninja.charithranweshikal.Adapters.Feeds;
 import in.co.geekninja.charithranweshikal.Fb;
+import in.co.geekninja.charithranweshikal.Misc.Boilerplate;
 import in.co.geekninja.charithranweshikal.Models.Feed;
 import in.co.geekninja.charithranweshikal.Models.Graphfeed;
 import in.co.geekninja.charithranweshikal.Storage.Database;
@@ -37,6 +41,8 @@ public class Fetcher extends IntentService {
     private static final int TITLE = 1;
     private int SHORT_DESC=3;
     DbHandler database;
+    private String untill="NoN";
+    private String pagingToken="NoN";
 
     public Fetcher() {
         super("Fetcher");
@@ -115,7 +121,7 @@ public class Fetcher extends IntentService {
     private void handleActionPrevious(String since) {
 
         if (!since.equals("-1"))
-            graphApi.previous("id,message,full_picture,picture", "json", token, since, 1, new Callback<Graphfeed>() {
+            graphApi.previous("id,message,full_picture,picture,from,link", "json", token, since, 1, new Callback<Graphfeed>() {
                 @Override
                 public void success(Graphfeed graphfeed, Response response) {
                     processFeeds(graphfeed);
@@ -131,10 +137,26 @@ public class Fetcher extends IntentService {
             });
     }
     void look(String token) {
-        graphApi.feed("id,message,full_picture,picture", token, new Callback<Graphfeed>() {
+        untill=getSharedPreferences("Chari",MODE_PRIVATE).getString("unitill","NoN");
+        pagingToken=getSharedPreferences("Chari",MODE_PRIVATE).getString("pagingToken","NoN");
+        if (!untill.equals("NoN"))
+        graphApi.next("id,message,full_picture,picture,from,link","json",token,"25",untill,pagingToken,  new Callback<Graphfeed>() {
             @Override
             public void success(Graphfeed graphfeed, Response response) {
                 processFeeds(graphfeed);
+                String next=graphfeed.getPaging().getNext();
+                String previous=graphfeed.getPaging().getPrevious();
+                try {
+                    Map<String, List<String>> nextParams=Boilerplate.getUrlParameters(next);
+                    untill=String.valueOf(nextParams.get("untill"));
+                    pagingToken=String.valueOf(nextParams.get("__paging_token"));
+                    SharedPreferences.Editor ed=getSharedPreferences("Chari",MODE_PRIVATE).edit();
+                    ed.putString("untill",untill);
+                    ed.putString("pagingToken",pagingToken);
+                    ed.apply();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 Intent looked=new Intent(ACTION_CURRENT);
                 looked.putExtra("data",graphfeed);
                 sendBroadcast(looked);
@@ -145,6 +167,34 @@ public class Fetcher extends IntentService {
 
             }
         });
+        else
+            graphApi.feed("id,message,full_picture,picture,from,link", token, new Callback<Graphfeed>() {
+                @Override
+                public void success(Graphfeed graphfeed, Response response) {
+                    processFeeds(graphfeed);
+                    String next=graphfeed.getPaging().getNext();
+                    String previous=graphfeed.getPaging().getPrevious();
+                    try {
+                        Map<String, List<String>> nextParams=Boilerplate.getUrlParameters(next);
+                        untill=String.valueOf(nextParams.get("untill"));
+                        pagingToken=String.valueOf(nextParams.get("__paging_token"));
+                        SharedPreferences.Editor ed=getSharedPreferences("Chari",MODE_PRIVATE).edit();
+                        ed.putString("untill",untill);
+                        ed.putString("pagingToken",pagingToken);
+                        ed.apply();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    Intent looked=new Intent(ACTION_CURRENT);
+                    looked.putExtra("data",graphfeed);
+                    sendBroadcast(looked);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
     }
 
 
@@ -154,6 +204,10 @@ public class Fetcher extends IntentService {
                 ContentValues values=new ContentValues();
                 Feeds feeds = new Feeds();
                 feeds.setImageUrl(feed.getPicture());
+                feeds.setFull_image(feed.getFull_picture());
+                feeds.setFrom(feed.getFrom().getName());
+                feeds.setLink(feed.getLink());
+
                 String[] feedSplitted = feed.getMessage().split("\\r?\\n");
                 feeds.setTitle(getReleavent(feedSplitted,TITLE));
                 feeds.setDesc(getReleavent(feedSplitted,SHORT_DESC));
@@ -161,6 +215,8 @@ public class Fetcher extends IntentService {
                 values.put(Database.FEED_ROW_FULLIMG,feed.getFull_picture());
                 values.put(Database.FEED_ROW_DESC,feed.getMessage());
                 values.put(Database.FEED_ROW_THUMB,feed.getPicture());
+                values.put(Database.FEED_ROW_LINK,feed.getLink());
+                values.put(Database.FEED_ROW_FROM,feed.getFrom().getName());
                 values.put(Database.FEED_ROW_ID,feed.getId());
                 database.Insert(values,Database.TAB_FEED);
             } catch (Exception e) {

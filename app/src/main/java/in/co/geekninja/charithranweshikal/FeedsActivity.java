@@ -6,21 +6,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.paging.listview.PagingListView;
 import com.yalantis.taurus.PullToRefreshView;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 
 import in.co.geekninja.charithranweshikal.Adapters.Feeds;
 import in.co.geekninja.charithranweshikal.Adapters.FeedsAdapter;
-import in.co.geekninja.charithranweshikal.Misc.Boilerplate;
-import in.co.geekninja.charithranweshikal.Models.Feed;
-import in.co.geekninja.charithranweshikal.Models.Graphfeed;
 import in.co.geekninja.charithranweshikal.Services.Fetcher;
+import in.co.geekninja.charithranweshikal.Storage.DbHandler;
 import retrofit.RestAdapter;
 
 /**
@@ -41,12 +40,23 @@ public class FeedsActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.feeds_activity);
+
         token=getSharedPreferences("Chari",MODE_PRIVATE).getString("token","NoN");
         list_view=(PagingListView)findViewById(R.id.list_view);
         if (feedses==null)
             feedses=new ArrayList<>();
+
         adapter=new FeedsAdapter(FeedsActivity.this,R.layout.feeds_single_row,feedses);
         list_view.setAdapter(adapter);
+        list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent=new Intent(FeedsActivity.this,ReadActivity.class);
+                intent.putExtra("feed",(Feeds)view.getTag());
+                startActivity(intent);
+            }
+        });
+        Initialize();
         mPullToRefreshView = (PullToRefreshView) findViewById(R.id.pull_to_refresh);
         mPullToRefreshView.setOnRefreshListener(new PullToRefreshView.OnRefreshListener() {
             @Override
@@ -73,7 +83,8 @@ public class FeedsActivity extends FragmentActivity {
         }
         else
         {
-         look(token);
+         Initialize();
+            //look(token);
         }
 
     }
@@ -119,10 +130,37 @@ public class FeedsActivity extends FragmentActivity {
         }
         return null;
     }
+    void Initialize()
+    {
+        DbHandler handler=new DbHandler(FeedsActivity.this);
+        List<Feeds> feedse=handler.getFeeds();
+        List<Feeds> fx =new ArrayList<>();
+        LinkedHashSet<Feeds> hashSet = new LinkedHashSet<>(feedses);
+
+        for (Feeds f:feedse)
+        {
+            if (hashSet.add(f))
+                feedses.add(f);
+        }
+        /*for (Feeds f : feedse){
+            if (fx.size()>0) {
+             for (Feeds ff: fx)
+                if (!f.getTitle().equals(ff.getTitle()))
+                    feedses.add(f);
+            }else {
+
+            }
+        }*/
+        if (feedse.size()<=0){
+            look(token);
+        }
+        adapter.notifyDataSetChanged();
+
+    }
     BroadcastReceiver broadcast= new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Graphfeed graphfeed= (Graphfeed) intent.getSerializableExtra("data");
+            /*Graphfeed graphfeed= (Graphfeed) intent.getSerializableExtra("data");
             adapter.notifyDataSetChanged();
             for (Feed feed : graphfeed.getData()) {
                 try {
@@ -150,7 +188,8 @@ public class FeedsActivity extends FragmentActivity {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
                 list_view.setHasMoreItems(false);
-            }
+            }*/
+            Initialize();
         }
     };
 }

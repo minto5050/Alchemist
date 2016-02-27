@@ -20,6 +20,29 @@ public class Feed implements Serializable {
     @Expose
     private String full_picture;
 
+    @SerializedName("link")
+    @Expose
+    private String link;
+    @SerializedName("from")
+    @Expose
+    private From from;
+
+    public From getFrom() {
+        return from;
+    }
+
+    public void setFrom(From from) {
+        this.from = from;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
     public String getFull_picture() {
         return full_picture;
     }

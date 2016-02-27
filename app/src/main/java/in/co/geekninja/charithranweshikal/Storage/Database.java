@@ -11,6 +11,8 @@ public class Database {
     public static final String FEED_ROW_FULLIMG = "full_image";
     public static final String FEED_ROW_ID = "id";
     public static final String TAB_FEED = "Feeds";
+    public static final String FEED_ROW_FROM = "fromUser";
+    public static final String FEED_ROW_LINK = "linkOriginal";
     public static String name="CharithramDb";
-    public static int version=1;
+    public static int version=2;
 }

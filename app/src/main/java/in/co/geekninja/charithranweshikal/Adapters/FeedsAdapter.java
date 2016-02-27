@@ -11,12 +11,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import in.co.geekninja.charithranweshikal.Misc.Boilerplate;
+import in.co.geekninja.charithranweshikal.Misc.PicassoCache;
 import in.co.geekninja.charithranweshikal.R;
 
 
@@ -46,7 +45,7 @@ public class FeedsAdapter extends ArrayAdapter<Feeds> {
         final Feeds feed = items.get(position);
         title.setText(feed.getTitle());
         desc.setText(feed.getDesc());
-        Picasso.with(context).load(feed.getImageUrl()).into(image);
+        PicassoCache.getPicassoInstance(context).load(feed.getImageUrl()).into(image);
         v.setTag(feed);
         return v;
     }

@@ -1,25 +1,66 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.nirhart.parallaxscroll.views.ParallaxScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="in.co.geekninja.charithranweshikal.ReadActivity">
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_launcher"
-        android:layout_alignParentTop="true"
-        android:id="@+id/image_read"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif"
-        android:layout_below="@+id/image_read"
-        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eu ipsum eget tortor molestie blandit. Aenean dictum ac erat vitae faucibus. Nunc nibh felis, viverra imperdiet dignissim vulputate, pretium nec nisi. Proin eget nibh vel sem ornare vulputate. Aenean sit amet tortor laoreet, rutrum leo id, sollicitudin augue. Fusce interdum condimentum ipsum, molestie efficitur odio tincidunt non. Ut placerat maximus ipsum, mattis porta lacus euismod ut. Nulla facilisi. Quisque ut ultricies urna. Mauris sagittis faucibus dolor"
-        android:id="@+id/text_read"/>
+    app:parallax_factor="1.9"
+    tools:context=".MainActivity" >
 
-</RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:gravity="center"
+            android:id="@+id/img_read"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ORIGINAL"
+            android:id="@+id/original"
+            android:background="@color/black_midnight_blue"
+            android:textColor="@color/white_clouds"
+            android:paddingTop="3dp"
+            android:paddingBottom="4dp"
+            android:paddingRight="8dp"
+            android:paddingLeft="4dp"
+            android:paddingEnd="8dp"
+            android:paddingStart="3dp"
+            android:fontFamily="sans-serif-light"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AUTHOR"
+                android:gravity="right|end"
+                android:background="@color/green_nephritis"
+                android:textColor="@color/white_clouds"
+                android:paddingTop="3dp"
+                android:paddingBottom="4dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="4dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="3dp"
+                android:id="@+id/author_name"
+                android:fontFamily="sans-serif-light"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"/>
+        </RelativeLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:background="@android:color/white"
+            android:padding="5dp"
+            android:id="@+id/read_content"
+            />
+    </LinearLayout>
+
+</com.nirhart.parallaxscroll.views.ParallaxScrollView>
