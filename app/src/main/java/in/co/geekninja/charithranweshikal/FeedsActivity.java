@@ -4,22 +4,25 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.View;
-import android.widget.AdapterView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
-import com.paging.listview.PagingListView;
 import com.yalantis.taurus.PullToRefreshView;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 
+import in.co.geekninja.charithranweshikal.Adapters.FeedRecyclerAdapter;
 import in.co.geekninja.charithranweshikal.Adapters.Feeds;
-import in.co.geekninja.charithranweshikal.Adapters.FeedsAdapter;
+import in.co.geekninja.charithranweshikal.Models.Feed;
+import in.co.geekninja.charithranweshikal.Models.Graphfeed;
 import in.co.geekninja.charithranweshikal.Services.Fetcher;
 import in.co.geekninja.charithranweshikal.Storage.DbHandler;
+import in.co.geekninja.charithranweshikal.Storage.SharedPrefs;
 import retrofit.RestAdapter;
 
 /**
@@ -30,32 +33,77 @@ public class FeedsActivity extends FragmentActivity {
     private static final int TITLE = 1;
     private static final int SHORT_DESC = 3;
     Fb graphApi;
-    FeedsAdapter adapter;
+    FeedRecyclerAdapter  adapter;
     List<Feeds> feedses;
     private PullToRefreshView mPullToRefreshView;
     private String since="-1";
-    PagingListView list_view;
+    RecyclerView list_view;
     String token="NoN";
+
+    private int previousTotal = 0;
+    private boolean loading = true;
+    private int visibleThreshold = 5;
+    int firstVisibleItem, visibleItemCount, totalItemCount;
+
+    LinearLayoutManager mLayoutManager;
+    private SharedPreferences sp;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.feeds_activity);
-
-        token=getSharedPreferences("Chari",MODE_PRIVATE).getString("token","NoN");
-        list_view=(PagingListView)findViewById(R.id.list_view);
+        sp=SharedPrefs.getInstance(FeedsActivity.this);
+        token=sp.getString(SharedPrefs.TOKEN,"NoN");
+        since=sp.getString(SharedPrefs.SINCE,"NoN");
+        list_view=(RecyclerView)findViewById(R.id.list_view);
         if (feedses==null)
             feedses=new ArrayList<>();
+        mLayoutManager = new LinearLayoutManager(this);
+        list_view.setLayoutManager(mLayoutManager);
+        list_view.addOnScrollListener(new RecyclerView.OnScrollListener()
+        {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+            {
+                if(dy > 0) //check for scroll down
+                {
+                    visibleItemCount = list_view.getChildCount();
+                    totalItemCount = mLayoutManager.getItemCount();
+                    firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
 
-        adapter=new FeedsAdapter(FeedsActivity.this,R.layout.feeds_single_row,feedses);
+                    if (loading) {
+                        if (totalItemCount > previousTotal) {
+                            loading = false;
+                            previousTotal = totalItemCount;
+                        }
+                    }
+                    if (!loading && (totalItemCount - visibleItemCount)
+                            <= (firstVisibleItem + visibleThreshold)) {
+                        // End has been reached
+
+                        Log.i("Yaeye!", "end called");
+
+                        if (!since.equals("NoN"))
+                            Fetcher.startPrevious(FeedsActivity.this,since);
+
+
+                    }
+
+
+                }
+            }
+        });
+        adapter=new FeedRecyclerAdapter(feedses,FeedsActivity.this);
+        //adapter=new FeedsAdapter(FeedsActivity.this,R.layout.feeds_single_row,feedses);
         list_view.setAdapter(adapter);
-        list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent=new Intent(FeedsActivity.this,ReadActivity.class);
                 intent.putExtra("feed",(Feeds)view.getTag());
                 startActivity(intent);
             }
-        });
+        });*/
         Initialize();
         mPullToRefreshView = (PullToRefreshView) findViewById(R.id.pull_to_refresh);
         mPullToRefreshView.setOnRefreshListener(new PullToRefreshView.OnRefreshListener() {
@@ -64,7 +112,7 @@ public class FeedsActivity extends FragmentActivity {
                 mPullToRefreshView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        look(token);
+                        next();
                         mPullToRefreshView.setRefreshing(false);
                     }
                 }, 2000);
@@ -89,10 +137,18 @@ public class FeedsActivity extends FragmentActivity {
 
     }
 
+    private void next() {
+        SharedPreferences sp = SharedPrefs.getInstance(FeedsActivity.this);
+        String untill = sp.getString(SharedPrefs.UNTIL, "NoN");
+        String pagingToken = sp.getString(SharedPrefs.PAGING_TOKEN, "NoN");
+        Fetcher.startActionNext(FeedsActivity.this,untill,pagingToken);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         registerReceiver(broadcast, new IntentFilter(Fetcher.ACTION_CURRENT));
+        registerReceiver(broadcast, new IntentFilter(Fetcher.ACTION_NEXT));
         registerReceiver(broadcast, new IntentFilter(Fetcher.ACTION_PREVIOUS));
     }
 
@@ -134,25 +190,9 @@ public class FeedsActivity extends FragmentActivity {
     {
         DbHandler handler=new DbHandler(FeedsActivity.this);
         List<Feeds> feedse=handler.getFeeds();
-        List<Feeds> fx =new ArrayList<>();
-        LinkedHashSet<Feeds> hashSet = new LinkedHashSet<>(feedses);
-
         for (Feeds f:feedse)
         {
-            if (hashSet.add(f))
-                feedses.add(f);
-        }
-        /*for (Feeds f : feedse){
-            if (fx.size()>0) {
-             for (Feeds ff: fx)
-                if (!f.getTitle().equals(ff.getTitle()))
-                    feedses.add(f);
-            }else {
-
-            }
-        }*/
-        if (feedse.size()<=0){
-            look(token);
+            adapter.addItem(f,FeedRecyclerAdapter.BOTTOM);
         }
         adapter.notifyDataSetChanged();
 
@@ -160,36 +200,37 @@ public class FeedsActivity extends FragmentActivity {
     BroadcastReceiver broadcast= new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            /*Graphfeed graphfeed= (Graphfeed) intent.getSerializableExtra("data");
-            adapter.notifyDataSetChanged();
+            Graphfeed graphfeed= (Graphfeed) intent.getSerializableExtra("data");
             for (Feed feed : graphfeed.getData()) {
                 try {
                     Feeds feeds = new Feeds();
                     feeds.setImageUrl(feed.getPicture());
+                    feeds.setFull_image(feed.getFull_picture());
+                    feeds.setLink(feed.getLink());
+                    feeds.setFrom(feed.getFrom().getName());
                     String[] feedSplitted = feed.getMessage().split("\\r?\\n");
-                    feeds.setTitle(getReleavent(feedSplitted,TITLE));
-                    feeds.setDesc(getReleavent(feedSplitted,SHORT_DESC));
-                    feedses.add(feeds);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    feeds.setTitle(getReleavent(feedSplitted, TITLE));
+                    feeds.setDesc(getReleavent(feedSplitted, SHORT_DESC));
+                    switch (intent.getAction()) {
+                        case Fetcher.ACTION_NEXT:
+                            adapter.addItem(feeds, FeedRecyclerAdapter.TOP);
+
+                            break;
+                        case Fetcher.ACTION_CURRENT:
+                            Initialize();
+                            break;
+                        case Fetcher.ACTION_PREVIOUS:
+                            adapter.addItem(feeds, FeedRecyclerAdapter.BOTTOM);
+
+                            break;
+                    }
+                }catch (Exception e){
+
                 }
+                adapter.notifyDataSetChanged();
+                loading=true;
             }
-            adapter.notifyDataSetChanged();
-            try {
-                Map<String, List<String>> params = Boilerplate.getUrlParameters(graphfeed.getPaging().getPrevious());
-                since = String.valueOf(params.get("since"));
-                if (since.equals("-1"))
-                    list_view.setHasMoreItems(false);
-                else
-                    list_view.setHasMoreItems(true);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-                list_view.setHasMoreItems(false);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-                list_view.setHasMoreItems(false);
-            }*/
-            Initialize();
+
         }
     };
 }

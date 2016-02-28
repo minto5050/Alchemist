@@ -25,6 +25,7 @@ import java.util.Arrays;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import in.co.geekninja.charithranweshikal.Misc.Boilerplate;
+import in.co.geekninja.charithranweshikal.Storage.SharedPrefs;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -43,8 +44,8 @@ public class SplashScreen extends AppCompatActivity  implements FacebookCallback
         setContentView(R.layout.activity_splash_screen);
         if (sweetAlertDialog==null)
             sweetAlertDialog=new SweetAlertDialog(SplashScreen.this,SweetAlertDialog.NORMAL_TYPE);
-        sharedPreferences=getSharedPreferences("Chari",MODE_PRIVATE);
-        token=sharedPreferences.getString("token","NoN");
+        sharedPreferences= SharedPrefs.getInstance(SplashScreen.this);
+        token=sharedPreferences.getString(SharedPrefs.TOKEN,"NoN");
         TextView tv=(TextView)findViewById(R.id.fullscreen_content);
         tv.setTypeface(Boilerplate.getFontPrimary());
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -146,7 +147,7 @@ public class SplashScreen extends AppCompatActivity  implements FacebookCallback
     @Override
     public void onSuccess(LoginResult loginResult) {
         String token=loginResult.getAccessToken().getToken();
-        getSharedPreferences("Chari",MODE_PRIVATE).edit().putString("token",token).apply();
+        SharedPrefs.getInstance(SplashScreen.this).edit().putString(SharedPrefs.TOKEN,token).apply();
 
         finish();
         startActivity(new Intent(SplashScreen.this,FeedsActivity.class));

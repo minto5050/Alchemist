@@ -13,6 +13,9 @@ public class Database {
     public static final String TAB_FEED = "Feeds";
     public static final String FEED_ROW_FROM = "fromUser";
     public static final String FEED_ROW_LINK = "linkOriginal";
+    public static final String FEED_ROW_PAGING_TOKEN = "pagingToken";
+    public static final String FEED_ROW_UNTILL = "untill";
+    public static final String FEED_ROW_SINCE = "since";
     public static String name="CharithramDb";
     public static int version=2;
 }

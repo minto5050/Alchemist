@@ -30,6 +30,7 @@ public class ReadActivity extends Activity {
         content_text.setText(feeds.getDesc());
         author.setText(feeds.getFrom());
         original=(TextView)findViewById(R.id.original);
+        original.setTypeface(Boilerplate.getFontSecondary());
         original.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

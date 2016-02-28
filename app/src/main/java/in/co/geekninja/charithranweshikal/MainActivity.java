@@ -21,6 +21,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import java.util.Arrays;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import in.co.geekninja.charithranweshikal.Storage.SharedPrefs;
 
 public class MainActivity extends AppCompatActivity implements FacebookCallback<LoginResult> {
 
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements FacebookCallback<
     @Override
     public void onSuccess(LoginResult loginResult) {
         String token=loginResult.getAccessToken().getToken();
-        getSharedPreferences("Chari",MODE_PRIVATE).edit().putString("token",token).apply();
+        SharedPrefs.getInstance(MainActivity.this).edit().putString(SharedPrefs.TOKEN,token).apply();
 
         finish();
         startActivity(new Intent(MainActivity.this,FeedsActivity.class));

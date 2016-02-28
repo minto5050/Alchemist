@@ -8,6 +8,7 @@ import android.os.Environment;
 import java.io.File;
 
 import in.co.geekninja.charithranweshikal.Misc.Boilerplate;
+import in.co.geekninja.charithranweshikal.Storage.SharedPrefs;
 
 /**
  * Created by PS on 2/24/2016.
@@ -17,7 +18,7 @@ public class Charithranweshikal extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        sharedPreferences=getSharedPreferences("Chari",MODE_PRIVATE);
+        sharedPreferences= SharedPrefs.getInstance(getApplicationContext());
         File outFile = new File(Environment.getExternalStorageDirectory()+"/.Charithranweshikal/fonts/");
         if (!outFile.exists())
         {

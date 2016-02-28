@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import in.co.geekninja.charithranweshikal.Adapters.Feeds;
+import in.co.geekninja.charithranweshikal.Services.Fetcher;
 import in.co.geekninja.dbgen.DbField;
 import in.co.geekninja.dbgen.DbGen;
 import in.co.geekninja.dbgen.Engine;
@@ -18,8 +19,11 @@ import in.co.geekninja.dbgen.Engine;
  * Created by PS on 2/26/2016.
  */
 public class DbHandler extends SQLiteOpenHelper {
+    private final Context context;
+
     public DbHandler(Context context) {
         super(context, Database.name, null, Database.version);
+        this.context=context;
     }
 
     @Override
@@ -32,9 +36,13 @@ public class DbHandler extends SQLiteOpenHelper {
         feedDb.add(new DbField(Database.FEED_ROW_FULLIMG,DbGen.TEXT));
         feedDb.add(new DbField(Database.FEED_ROW_LINK,DbGen.TEXT));
         feedDb.add(new DbField(Database.FEED_ROW_FROM,DbGen.TEXT));
+        feedDb.add(new DbField(Database.FEED_ROW_SINCE,DbGen.TEXT));
+        feedDb.add(new DbField(Database.FEED_ROW_UNTILL,DbGen.TEXT));
+        feedDb.add(new DbField(Database.FEED_ROW_PAGING_TOKEN,DbGen.TEXT));
         feedDb.add(new DbField(Database.FEED_ROW_ID,DbGen.TEXT,true,false,true));
         String queryFeed=Engine.getQuery(DbGen.CREATE_TABLE,Database.TAB_FEED,feedDb);
         db.execSQL(queryFeed);
+        Fetcher.startActionCurrent(context);
     }
 
     @Override
@@ -61,7 +69,7 @@ public class DbHandler extends SQLiteOpenHelper {
                 Database.FEED_ROW_FULLIMG,
                 Database.FEED_ROW_DESC,
                 Database.FEED_ROW_THUMB,
-                Database.FEED_ROW_TITLE},null,null,null,null,null,"20");
+                Database.FEED_ROW_TITLE},null,null,null,null,null,null);
         if (cur.moveToFirst())
         {
             do {

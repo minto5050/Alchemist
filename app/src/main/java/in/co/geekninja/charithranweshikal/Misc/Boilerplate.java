@@ -22,6 +22,7 @@ import java.util.Map;
  * Created by PS on 2/26/2016.
  */
 public class Boilerplate {
+    private static final int SHORT_DESC = 1;
     Typeface fontPrimary,fontSecondary;
 
     public static Typeface getFontPrimary() {
@@ -29,6 +30,34 @@ public class Boilerplate {
             return Typeface.createFromFile(new File(Environment.getExternalStorageDirectory()+"/.Charithranweshikal/fonts/aruna-Normal.ttf"));
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        return null;
+    }
+    public static String getReleavent(String feedSplitted,int type)
+    {
+        return getReleavent(feedSplitted.split("\\r?\\n"),type);
+    }
+    public static String getReleavent(String[] feedSplitted, int TyPE) {
+        List<String> array=new ArrayList<String>();
+        for (String sin: feedSplitted)
+            array.add(sin);
+        if (TyPE==SHORT_DESC)
+        {
+            array.remove(0);
+        }
+        for (String line:array)
+        {
+            if (!line.equals("")
+                    &&!line.contains("=====")
+                    &&!line.contains("xxxxx")
+                    &&!line.contains("......")
+                    &&!line.contains(",,,,,")
+                    &&!line.contains("-----")
+                    &&!line.contains("#####")
+                    &&!line.contains("\\u2605\\u2605\\u2605\\u2605")
+                    &&!line.contains("****")
+                    &&!line.contains("\\u2606\\u2606\\u2606\\u2606"))
+                return line;
         }
         return null;
     }
