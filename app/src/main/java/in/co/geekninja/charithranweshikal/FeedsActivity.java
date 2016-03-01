@@ -2,6 +2,7 @@ package in.co.geekninja.charithranweshikal;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -9,15 +10,19 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.yalantis.taurus.PullToRefreshView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+import in.co.geekninja.charithranweshikal.Adapters.EndlessRecyclerOnScrollListener;
 import in.co.geekninja.charithranweshikal.Adapters.FeedRecyclerAdapter;
 import in.co.geekninja.charithranweshikal.Adapters.Feeds;
+import in.co.geekninja.charithranweshikal.Misc.Boilerplate;
 import in.co.geekninja.charithranweshikal.Models.Feed;
 import in.co.geekninja.charithranweshikal.Models.Graphfeed;
 import in.co.geekninja.charithranweshikal.Services.Fetcher;
@@ -30,8 +35,7 @@ import retrofit.RestAdapter;
  */
 public class FeedsActivity extends FragmentActivity {
     private static final String TAG = "Chari";
-    private static final int TITLE = 1;
-    private static final int SHORT_DESC = 3;
+
     Fb graphApi;
     FeedRecyclerAdapter  adapter;
     List<Feeds> feedses;
@@ -39,15 +43,14 @@ public class FeedsActivity extends FragmentActivity {
     private String since="-1";
     RecyclerView list_view;
     String token="NoN";
-
     private int previousTotal = 0;
     private boolean loading = true;
     private int visibleThreshold = 5;
     int firstVisibleItem, visibleItemCount, totalItemCount;
-
     LinearLayoutManager mLayoutManager;
     private SharedPreferences sp;
-
+    private boolean shown_disclaimer=false;
+    SweetAlertDialog disclaimer;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,12 +58,39 @@ public class FeedsActivity extends FragmentActivity {
         sp=SharedPrefs.getInstance(FeedsActivity.this);
         token=sp.getString(SharedPrefs.TOKEN,"NoN");
         since=sp.getString(SharedPrefs.SINCE,"NoN");
+        disclaimer=new SweetAlertDialog(FeedsActivity.this,SweetAlertDialog.CUSTOM_LAYOUT_TYPE);
+        shown_disclaimer=sp.getBoolean(SharedPrefs.DISCLAIMER,false);
+        mPullToRefreshView = (PullToRefreshView) findViewById(R.id.pull_to_refresh);
+        if (!shown_disclaimer)
+        {
+            mPullToRefreshView.setRefreshing(true);
+
+            TextView disc=new TextView(FeedsActivity.this);
+            disc.setTypeface(Boilerplate.getFontPrimary(FeedsActivity.this));
+            disc.setText(getString(R.string.disclaimer));
+            disclaimer.setCustomView(disc);
+            disclaimer.show();
+            disclaimer.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                sp.edit().putBoolean(SharedPrefs.DISCLAIMER,true).apply();
+                }
+            });
+        }
         list_view=(RecyclerView)findViewById(R.id.list_view);
+
         if (feedses==null)
             feedses=new ArrayList<>();
         mLayoutManager = new LinearLayoutManager(this);
         list_view.setLayoutManager(mLayoutManager);
-        list_view.addOnScrollListener(new RecyclerView.OnScrollListener()
+        list_view.addOnScrollListener(new EndlessRecyclerOnScrollListener(mLayoutManager) {
+            @Override
+            public void onLoadMore(int current_page) {
+                if (!since.equals("NoN"))
+                    Fetcher.startPrevious(FeedsActivity.this,since);
+            }
+        });
+        /*list_view.addOnScrollListener(new RecyclerView.OnScrollListener()
         {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy)
@@ -82,9 +112,8 @@ public class FeedsActivity extends FragmentActivity {
                         // End has been reached
 
                         Log.i("Yaeye!", "end called");
+                        loading = true;
 
-                        if (!since.equals("NoN"))
-                            Fetcher.startPrevious(FeedsActivity.this,since);
 
 
                     }
@@ -92,30 +121,16 @@ public class FeedsActivity extends FragmentActivity {
 
                 }
             }
-        });
-        adapter=new FeedRecyclerAdapter(feedses,FeedsActivity.this);
-        //adapter=new FeedsAdapter(FeedsActivity.this,R.layout.feeds_single_row,feedses);
-        list_view.setAdapter(adapter);
-        /*list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent=new Intent(FeedsActivity.this,ReadActivity.class);
-                intent.putExtra("feed",(Feeds)view.getTag());
-                startActivity(intent);
-            }
         });*/
+        adapter=new FeedRecyclerAdapter(feedses,FeedsActivity.this);
+        list_view.setAdapter(adapter);
         Initialize();
-        mPullToRefreshView = (PullToRefreshView) findViewById(R.id.pull_to_refresh);
+
+
         mPullToRefreshView.setOnRefreshListener(new PullToRefreshView.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mPullToRefreshView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        next();
-                        mPullToRefreshView.setRefreshing(false);
-                    }
-                }, 2000);
+                next();
             }
         });
 
@@ -139,9 +154,9 @@ public class FeedsActivity extends FragmentActivity {
 
     private void next() {
         SharedPreferences sp = SharedPrefs.getInstance(FeedsActivity.this);
-        String untill = sp.getString(SharedPrefs.UNTIL, "NoN");
+        String until = sp.getString(SharedPrefs.UNTIL, "NoN");
         String pagingToken = sp.getString(SharedPrefs.PAGING_TOKEN, "NoN");
-        Fetcher.startActionNext(FeedsActivity.this,untill,pagingToken);
+        Fetcher.startActionNext(FeedsActivity.this,until,pagingToken);
     }
 
     @Override
@@ -162,30 +177,7 @@ public class FeedsActivity extends FragmentActivity {
         Fetcher.startActionCurrent(FeedsActivity.this);
     }
 
-    private String getReleavent(String[] feedSplitted, int TyPE) {
-        List<String> array=new ArrayList<String>();
-        for (String sin: feedSplitted)
-            array.add(sin);
-        if (TyPE==SHORT_DESC)
-        {
-            array.remove(0);
-        }
-        for (String line:array)
-        {
-            if (!line.equals("")
-                    &&!line.contains("=====")
-                    &&!line.contains("xxxxx")
-                    &&!line.contains("......")
-                    &&!line.contains(",,,,,")
-                    &&!line.contains("-----")
-                    &&!line.contains("#####")
-                    &&!line.contains("\\u2605\\u2605\\u2605\\u2605")
-                    &&!line.contains("****")
-                    &&!line.contains("\\u2606\\u2606\\u2606\\u2606"))
-                return line;
-        }
-        return null;
-    }
+
     void Initialize()
     {
         DbHandler handler=new DbHandler(FeedsActivity.this);
@@ -200,6 +192,11 @@ public class FeedsActivity extends FragmentActivity {
     BroadcastReceiver broadcast= new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            mPullToRefreshView.setRefreshing(false);
+            if (disclaimer.isShowing()) {
+                disclaimer.dismiss();
+                Toast.makeText(FeedsActivity.this,R.string.scroll_down,Toast.LENGTH_SHORT).show();
+            }
             Graphfeed graphfeed= (Graphfeed) intent.getSerializableExtra("data");
             for (Feed feed : graphfeed.getData()) {
                 try {
@@ -208,9 +205,8 @@ public class FeedsActivity extends FragmentActivity {
                     feeds.setFull_image(feed.getFull_picture());
                     feeds.setLink(feed.getLink());
                     feeds.setFrom(feed.getFrom().getName());
-                    String[] feedSplitted = feed.getMessage().split("\\r?\\n");
-                    feeds.setTitle(getReleavent(feedSplitted, TITLE));
-                    feeds.setDesc(getReleavent(feedSplitted, SHORT_DESC));
+                    feeds.setDesc(feed.getMessage());
+                    feeds.setTitle(Boilerplate.getReleavent(feed.getMessage(),Boilerplate.TITLE));
                     switch (intent.getAction()) {
                         case Fetcher.ACTION_NEXT:
                             adapter.addItem(feeds, FeedRecyclerAdapter.TOP);
@@ -225,10 +221,12 @@ public class FeedsActivity extends FragmentActivity {
                             break;
                     }
                 }catch (Exception e){
-
+                    e.printStackTrace();
                 }
+
                 adapter.notifyDataSetChanged();
-                loading=true;
+
+                //  loading=true;
             }
 
         }

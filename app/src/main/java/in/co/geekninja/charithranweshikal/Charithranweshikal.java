@@ -3,7 +3,6 @@ package in.co.geekninja.charithranweshikal;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.os.Environment;
 
 import java.io.File;
 
@@ -19,11 +18,13 @@ public class Charithranweshikal extends Application {
     public void onCreate() {
         super.onCreate();
         sharedPreferences= SharedPrefs.getInstance(getApplicationContext());
-        File outFile = new File(Environment.getExternalStorageDirectory()+"/.Charithranweshikal/fonts/");
+        File outFile = new File(getFilesDir()+"/fonts/");
         if (!outFile.exists())
         {
-            outFile.mkdirs();
-            Boilerplate.copyAssets(Charithranweshikal.this);
+
+            if (outFile.mkdirs()) {
+                Boilerplate.copyAssets(Charithranweshikal.this);
+            }
         }
 
     }

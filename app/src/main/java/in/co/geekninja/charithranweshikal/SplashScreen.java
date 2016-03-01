@@ -1,11 +1,14 @@
 package in.co.geekninja.charithranweshikal;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -31,7 +34,8 @@ import in.co.geekninja.charithranweshikal.Storage.SharedPrefs;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class SplashScreen extends AppCompatActivity  implements FacebookCallback<LoginResult> {
+public class SplashScreen extends Activity implements FacebookCallback<LoginResult> {
+    private static final int REQUEST_WRITE_STORAGE = 112;
     private CallbackManager callbackManager;
     private Button loginButton;
     private GoogleApiClient client;
@@ -42,12 +46,15 @@ public class SplashScreen extends AppCompatActivity  implements FacebookCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+        boolean hasPermission = (ContextCompat.checkSelfPermission(SplashScreen.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+
         if (sweetAlertDialog==null)
             sweetAlertDialog=new SweetAlertDialog(SplashScreen.this,SweetAlertDialog.NORMAL_TYPE);
         sharedPreferences= SharedPrefs.getInstance(SplashScreen.this);
         token=sharedPreferences.getString(SharedPrefs.TOKEN,"NoN");
         TextView tv=(TextView)findViewById(R.id.fullscreen_content);
-        tv.setTypeface(Boilerplate.getFontPrimary());
+        tv.setTypeface(Boilerplate.getFontPrimary(SplashScreen.this));
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         loginButton = (Button) findViewById(R.id.connect_facebook);
@@ -175,4 +182,5 @@ public class SplashScreen extends AppCompatActivity  implements FacebookCallback
         //manage login result
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
+
 }

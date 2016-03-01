@@ -3,7 +3,6 @@ package in.co.geekninja.charithranweshikal.Misc;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
@@ -22,12 +21,18 @@ import java.util.Map;
  * Created by PS on 2/26/2016.
  */
 public class Boilerplate {
-    private static final int SHORT_DESC = 1;
+    public static final int SHORT_DESC = 1;
+    public static final int TITLE = 2;
     Typeface fontPrimary,fontSecondary;
 
-    public static Typeface getFontPrimary() {
+    public static Typeface getFontPrimary(Context context) {
+        File file=new File(context.getFilesDir()+"/fonts/aruna-Normal.ttf");
+        if (!file.exists())
+        {
+            Boilerplate.copyAssets(context);
+        }
         try {
-            return Typeface.createFromFile(new File(Environment.getExternalStorageDirectory()+"/.Charithranweshikal/fonts/aruna-Normal.ttf"));
+            return Typeface.createFromFile(file);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,7 +52,8 @@ public class Boilerplate {
         }
         for (String line:array)
         {
-            if (!line.equals("")
+            if (!line.equals(" ")
+                    &&!line.equals("")
                     &&!line.contains("=====")
                     &&!line.contains("xxxxx")
                     &&!line.contains("......")
@@ -89,8 +95,18 @@ public class Boilerplate {
         this.fontPrimary = fontPrimary;
     }
 
-    public static Typeface getFontSecondary() {
-        return Typeface.createFromFile(new File(Environment.getExternalStorageDirectory()+"/.Charithranweshikal/fonts/ML-NILA03.ttf"));
+    public static Typeface getFontSecondary(Context context) {
+        File file=new File(context.getFilesDir()+"/fonts/ML-NILA03.ttf");
+        if (!file.exists())
+        {
+            Boilerplate.copyAssets(context);
+        }
+        try {
+            return Typeface.createFromFile(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void setFontSecondary(Typeface fontSecondary) {
@@ -110,11 +126,12 @@ public class Boilerplate {
             OutputStream out = null;
             try {
                 in = assetManager.open(filename);
-                File outFile = new File(Environment.getExternalStorageDirectory()+"/.Charithranweshikal/fonts/", filename);
+                File outFile = new File(context.getFilesDir()+"/fonts/", filename);
                 out = new FileOutputStream(outFile);
                 copyFile(in, out);
             } catch(IOException e) {
                 Log.e("tag", "Failed to copy asset file: " + filename, e);
+                e.printStackTrace();
             }
             finally {
                 if (in != null) {
@@ -122,6 +139,7 @@ public class Boilerplate {
                         in.close();
                     } catch (IOException e) {
                         // NOOP
+
                     }
                 }
                 if (out != null) {
@@ -129,6 +147,7 @@ public class Boilerplate {
                         out.close();
                     } catch (IOException e) {
                         // NOOP
+                        e.printStackTrace();
                     }
                 }
             }

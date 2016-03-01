@@ -187,42 +187,52 @@ public class Fetcher extends IntentService {
 
 
     private void processFeeds(Graphfeed graphfeed) {
-        try {
-            Map<String, List<String>> nextParams=Boilerplate.getUrlParameters(graphfeed.getPaging().getNext());
-            Map<String, List<String>> prevParams=Boilerplate.getUrlParameters(graphfeed.getPaging().getPrevious());
-            String untill=nextParams.get("until").get(0);
-            String since=prevParams.get("since").get(0);
-            String pagingToken=nextParams.get("__paging_token").get(0);
-            SharedPreferences.Editor ed=SharedPrefs.getInstance(Fetcher.this).edit();
-            ed.putString(SharedPrefs.UNTIL,untill);
-            ed.putString(SharedPrefs.PAGING_TOKEN,pagingToken);
-            ed.putString(SharedPrefs.SINCE,since);
-            ed.apply();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        for (Feed feed : graphfeed.getData()) {
-            try {
-                ContentValues values=new ContentValues();
-                Feeds feeds = new Feeds();
-                feeds.setImageUrl(feed.getPicture());
-                feeds.setFull_image(feed.getFull_picture());
-                feeds.setFrom(feed.getFrom().getName());
-                feeds.setLink(feed.getLink());
+       Map<String, List<String>> nextParams= null;
+       if (graphfeed.getPaging()!=null) {
+           try {
+               nextParams = Boilerplate.getUrlParameters(graphfeed.getPaging().getNext());
+           } catch (UnsupportedEncodingException e) {
+               e.printStackTrace();
+           }
+           Map<String, List<String>> prevParams = null;
+           try {
+               prevParams = Boilerplate.getUrlParameters(graphfeed.getPaging().getPrevious());
+           } catch (UnsupportedEncodingException e) {
+               e.printStackTrace();
+           }
+           String untill = nextParams.get("until").get(0);
+           String since = prevParams.get("since").get(0);
+           String pagingToken = nextParams.get("__paging_token").get(0);
+           SharedPreferences.Editor ed = SharedPrefs.getInstance(Fetcher.this).edit();
+           ed.putString(SharedPrefs.UNTIL, untill);
+           ed.putString(SharedPrefs.PAGING_TOKEN, pagingToken);
+           ed.putString(SharedPrefs.SINCE, since);
+           ed.apply();
+       }
+        if (graphfeed.getData().size()>0) {
+            for (Feed feed : graphfeed.getData()) {
+                try {
+                    ContentValues values = new ContentValues();
+                    Feeds feeds = new Feeds();
+                    feeds.setImageUrl(feed.getPicture());
+                    feeds.setFull_image(feed.getFull_picture());
+                    feeds.setFrom(feed.getFrom().getName());
+                    feeds.setLink(feed.getLink());
 
-                String[] feedSplitted = feed.getMessage().split("\\r?\\n");
-                feeds.setTitle(Boilerplate.getReleavent(feedSplitted,TITLE));
-                feeds.setDesc(Boilerplate.getReleavent(feedSplitted,SHORT_DESC));
-                values.put(Database.FEED_ROW_TITLE,feeds.getTitle());
-                values.put(Database.FEED_ROW_FULLIMG,feed.getFull_picture());
-                values.put(Database.FEED_ROW_DESC,feed.getMessage());
-                values.put(Database.FEED_ROW_THUMB,feed.getPicture());
-                values.put(Database.FEED_ROW_LINK,feed.getLink());
-                values.put(Database.FEED_ROW_FROM,feed.getFrom().getName());
-                values.put(Database.FEED_ROW_ID,feed.getId());
-                database.Insert(values,Database.TAB_FEED);
-            } catch (Exception e) {
-                e.printStackTrace();
+                    String[] feedSplitted = feed.getMessage().split("\\r?\\n");
+                    feeds.setTitle(Boilerplate.getReleavent(feedSplitted, TITLE));
+                    feeds.setDesc(Boilerplate.getReleavent(feedSplitted, SHORT_DESC));
+                    values.put(Database.FEED_ROW_TITLE, feeds.getTitle());
+                    values.put(Database.FEED_ROW_FULLIMG, feed.getFull_picture());
+                    values.put(Database.FEED_ROW_DESC, feed.getMessage());
+                    values.put(Database.FEED_ROW_THUMB, feed.getPicture());
+                    values.put(Database.FEED_ROW_LINK, feed.getLink());
+                    values.put(Database.FEED_ROW_FROM, feed.getFrom().getName());
+                    values.put(Database.FEED_ROW_ID, feed.getId());
+                    database.Insert(values, Database.TAB_FEED);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

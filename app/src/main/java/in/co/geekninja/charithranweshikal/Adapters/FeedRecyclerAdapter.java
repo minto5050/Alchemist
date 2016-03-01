@@ -54,8 +54,8 @@ public class FeedRecyclerAdapter extends RecyclerView.Adapter<FeedRecyclerAdapte
                     context.startActivity(intent);
                 }
             });
-            holder.title.setText(Boilerplate.getReleavent(item.getTitle(),0));
-            holder.description.setText(Boilerplate.getReleavent(item.getDesc(),1));
+            holder.title.setText(Boilerplate.getReleavent(item.getDesc(),Boilerplate.TITLE));
+            holder.description.setText(Boilerplate.getReleavent(item.getDesc(),Boilerplate.SHORT_DESC));
             PicassoCache.getPicassoInstance(context).load(item.getImageUrl()).into(holder.icon);
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,18 +64,22 @@ public class FeedRecyclerAdapter extends RecyclerView.Adapter<FeedRecyclerAdapte
 
     public void addItem(Feeds feed,int position)
     {
-        for (Feeds mi:feeds) {
-            if (mi.getTitle().equals(feed.getTitle())){
-                Log.e("..","exists");
-                return;
+        try {
+            for (Feeds mi:feeds) {
+                if (mi.getTitle().equals(feed.getTitle())){
+                    Log.e("..","exists");
+                    return;
+                }
             }
-        }
-        if (position==TOP){
-            feeds.add(0,feed);
-        }
-        else if (position==BOTTOM)
-        {
-            feeds.add(feed);
+            if (position==TOP){
+                feeds.add(0,feed);
+            }
+            else if (position==BOTTOM)
+            {
+                feeds.add(feed);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     @Override
@@ -93,11 +97,10 @@ public class FeedRecyclerAdapter extends RecyclerView.Adapter<FeedRecyclerAdapte
          */
         public FeedViewHolder(View v) {
             super(v);
-
             title = (TextView) v.findViewById(R.id.txt_title_feeds);
-            title.setTypeface(Boilerplate.getFontSecondary());
+            title.setTypeface(Boilerplate.getFontSecondary(v.getContext()));
             description = (TextView) v.findViewById(R.id.txt_dec_feeds);
-            description.setTypeface(Boilerplate.getFontPrimary());
+            description.setTypeface(Boilerplate.getFontPrimary(v.getContext()));
             icon = (CircleImageView) v.findViewById(R.id.img_image_feeds);
         }
     }

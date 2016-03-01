@@ -10,6 +10,7 @@ public class SharedPrefs {
     public static final String UNTIL = "until";
     public static final String PAGING_TOKEN = "pagingToken";
     public static final String TOKEN = "token";
+    public static final String DISCLAIMER = "Disclaimer";
     public static String SINCE="since";
     SharedPreferences sp;
     static SharedPrefs s;

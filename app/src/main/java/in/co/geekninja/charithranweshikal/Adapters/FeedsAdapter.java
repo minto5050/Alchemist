@@ -39,8 +39,8 @@ public class FeedsAdapter extends ArrayAdapter<Feeds> {
         View v = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(layout, null);
         TextView title = (TextView) v.findViewById(R.id.txt_title_feeds);
         TextView desc = (TextView) v.findViewById(R.id.txt_dec_feeds);
-        desc.setTypeface(Boilerplate.getFontSecondary());
-        title.setTypeface(Boilerplate.getFontPrimary());
+        desc.setTypeface(Boilerplate.getFontSecondary(context));
+        title.setTypeface(Boilerplate.getFontPrimary(context));
         final CircleImageView image = (CircleImageView) v.findViewById(R.id.img_image_feeds);
         final Feeds feed = items.get(position);
         title.setText(feed.getTitle());
