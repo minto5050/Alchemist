@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -29,14 +30,19 @@ public class ReadActivity extends Activity {
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
+    AppEventsLogger logger;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read);
+         logger = AppEventsLogger.newLogger(this);
+
+        logger.logEvent("ReadArticle");
         imageView = (ImageView) findViewById(R.id.img_read);
         content_text = (EditText) findViewById(R.id.read_content);
-        content_text.setCustomSelectionActionModeCallback(new ActionCallbackText(content_text, ReadActivity.this));
+        content_text.setCustomSelectionActionModeCallback(new ActionCallbackText(content_text, ReadActivity.this,logger));
         author = (TextView) findViewById(R.id.author_name);
         content_text.setTypeface(Boilerplate.getFontPrimary(ReadActivity.this));
         alert = new SweetAlertDialog(ReadActivity.this, SweetAlertDialog.ERROR_TYPE);
@@ -105,5 +111,16 @@ public class ReadActivity extends Activity {
         );
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AppEventsLogger.activateApp(this);
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AppEventsLogger.deactivateApp(this);
     }
 }

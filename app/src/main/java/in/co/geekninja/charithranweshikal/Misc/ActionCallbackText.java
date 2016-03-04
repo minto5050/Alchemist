@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.appevents.AppEventsLogger;
+
 import in.co.geekninja.charithranweshikal.R;
 
 /**
@@ -22,10 +24,12 @@ import in.co.geekninja.charithranweshikal.R;
 public class ActionCallbackText implements ActionMode.Callback {
     private final View bodyView;
     private final Context context;
+    private final AppEventsLogger logger;
 
-    public ActionCallbackText(View bodyView,Context context) {
+    public ActionCallbackText(View bodyView,Context context,AppEventsLogger logger) {
         this.bodyView=bodyView;
         this.context=context;
+        this.logger=logger;
     }
 
 
@@ -62,6 +66,7 @@ public class ActionCallbackText implements ActionMode.Callback {
                 clipboard.setPrimaryClip(data);
                 Toast.makeText(context,"Copied",Toast.LENGTH_SHORT).show();
                 mode.finish();
+                logger.logEvent("CopiedText");
                 return true;
 
             case R.id.share:
@@ -72,6 +77,7 @@ public class ActionCallbackText implements ActionMode.Callback {
                 sendIntent.setType("text/plain");
                 context.startActivity(sendIntent);
                 mode.finish();
+                logger.logEvent("SharedArticle");
                 return true;
         }
         return false;

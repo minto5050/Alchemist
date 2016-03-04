@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.appevents.AppEventsLogger;
 import com.yalantis.taurus.PullToRefreshView;
 
 import java.util.ArrayList;
@@ -51,6 +52,8 @@ public class FeedsActivity extends FragmentActivity {
     private SharedPreferences sp;
     private boolean shown_disclaimer=false;
     SweetAlertDialog disclaimer;
+    private AppEventsLogger logger;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +61,7 @@ public class FeedsActivity extends FragmentActivity {
         sp=SharedPrefs.getInstance(FeedsActivity.this);
         token=sp.getString(SharedPrefs.TOKEN,"NoN");
         since=sp.getString(SharedPrefs.SINCE,"NoN");
+        logger = AppEventsLogger.newLogger(this);
         disclaimer=new SweetAlertDialog(FeedsActivity.this,SweetAlertDialog.CUSTOM_LAYOUT_TYPE);
         shown_disclaimer=sp.getBoolean(SharedPrefs.DISCLAIMER,false);
         mPullToRefreshView = (PullToRefreshView) findViewById(R.id.pull_to_refresh);
@@ -131,6 +135,7 @@ public class FeedsActivity extends FragmentActivity {
             @Override
             public void onRefresh() {
                 next();
+                logger.logEvent("PulledTheList");
             }
         });
 
