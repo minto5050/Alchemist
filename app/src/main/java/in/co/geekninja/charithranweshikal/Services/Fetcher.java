@@ -36,6 +36,8 @@ public class Fetcher extends IntentService {
     public static final String ACTION_NEXT = "in.co.geekninja.charithranweshikal.Services.action.NEXT";
     private static final String EXTRA_PAGING_TOKEN = "PagingToken";
     private static final String EXTRA_UNTILL = "Untill";
+    private static final String ACTION_LIMIT = "in.co.geekninja.charithranweshikal.Services.action.LIMIT";
+    public static final String EXTRA_LIMIT = "in.co.geekninja.charithranweshikal.Services.extra.LIMIT";
     Fb graphApi;
     public static final String ACTION_CURRENT = "in.co.geekninja.charithranweshikal.Services.action.CURRENT";
     public static final String ACTION_PREVIOUS = "in.co.geekninja.charithranweshikal.Services.action.PREVIOUS";
@@ -116,11 +118,15 @@ public class Fetcher extends IntentService {
                 final String pt=sp.getString(SharedPrefs.PAGING_TOKEN,"NoN");
                 handleActionNext(un,pt);
             }
+            else if (ACTION_LIMIT.equals(action)){
+                int limit=intent.getIntExtra(EXTRA_LIMIT,20);
+                handleActionLimit(limit);
+            }
         }
     }
 
     private void handleActionNext(String un, String pt) {
-        graphApi.next("id,message,full_picture,picture,from,link","json",token,"25",un,pt,  new Callback<Graphfeed>() {
+        graphApi.next("id,message,full_picture,picture,from,link,created_time","json",token,"25",un,pt,"U",  new Callback<Graphfeed>() {
             @Override
             public void success(Graphfeed graphfeed, Response response) {
                 processFeeds(graphfeed);
@@ -142,7 +148,37 @@ public class Fetcher extends IntentService {
      */
     private void handleActionCurrent() {
 
-        look(token);
+        graphApi.feed("id,message,full_picture,picture,from,link,created_time","U", token, new Callback<Graphfeed>() {
+            @Override
+            public void success(Graphfeed graphfeed, Response response) {
+                processFeeds(graphfeed);
+                Intent looked=new Intent(ACTION_CURRENT);
+                looked.putExtra("data",graphfeed);
+                sendBroadcast(looked);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+    }
+    private void handleActionLimit(int limit) {
+
+        graphApi.feedWithLimit("id,message,full_picture,picture,from,link",limit, token,"U", new Callback<Graphfeed>() {
+            @Override
+            public void success(Graphfeed graphfeed, Response response) {
+                processFeeds(graphfeed);
+                Intent looked=new Intent(ACTION_PREVIOUS);
+                looked.putExtra("data",graphfeed);
+                sendBroadcast(looked);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
     }
 
     /**
@@ -152,28 +188,11 @@ public class Fetcher extends IntentService {
      */
     private void handleActionPrevious(String since) {
 
-            graphApi.previous("id,message,full_picture,picture,from,link", "json", token, since, 1, new Callback<Graphfeed>() {
+            graphApi.previous("id,message,full_picture,picture,from,link,created_time", "json", token, since, 1,"U", new Callback<Graphfeed>() {
                 @Override
                 public void success(Graphfeed graphfeed, Response response) {
                     processFeeds(graphfeed);
                     Intent looked=new Intent(ACTION_PREVIOUS);
-                    looked.putExtra("data",graphfeed);
-                    sendBroadcast(looked);
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-
-                }
-            });
-    }
-    void look(String token) {
-
-            graphApi.feed("id,message,full_picture,picture,from,link", token, new Callback<Graphfeed>() {
-                @Override
-                public void success(Graphfeed graphfeed, Response response) {
-                    processFeeds(graphfeed);
-                    Intent looked=new Intent(ACTION_CURRENT);
                     looked.putExtra("data",graphfeed);
                     sendBroadcast(looked);
                 }
@@ -243,6 +262,13 @@ public class Fetcher extends IntentService {
         intent.setAction(ACTION_NEXT);
         intent.putExtra(EXTRA_UNTILL,untill);
         intent.putExtra(EXTRA_PAGING_TOKEN,pagingToken);
+        context.startService(intent);
+    }
+
+    public static void startActionLimit(int i,Context context) {
+        Intent intent = new Intent(context, Fetcher.class);
+        intent.setAction(ACTION_LIMIT);
+        intent.putExtra(EXTRA_LIMIT,i);
         context.startService(intent);
     }
 }

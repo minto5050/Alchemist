@@ -28,6 +28,7 @@ import java.util.Arrays;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import in.co.geekninja.charithranweshikal.Misc.Boilerplate;
+import in.co.geekninja.charithranweshikal.Services.Fetcher;
 import in.co.geekninja.charithranweshikal.Storage.SharedPrefs;
 
 /**
@@ -84,6 +85,9 @@ public class SplashScreen extends Activity implements FacebookCallback<LoginResu
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     finish();
+                    Fetcher.startActionLimit(800,SplashScreen.this);
+
+
                 }
                 else
                 {

@@ -11,14 +11,14 @@ import retrofit.http.Query;
 public interface Fb  {
     @GET("/feed")
     void feed(@Query("fields")String fields,
-              @Query("access_token")String access_token,
+              @Query("access_token")String access_token,@Query("time_format") String time_format,
               Callback<Graphfeed> callback);
     @GET("/feed")
     void previous(@Query("fields")String fields,
                   @Query("format")String format,
                   @Query("access_token")String access_token,
                   @Query("since")String since,
-                  @Query("__previous")int previous,
+                  @Query("__previous")int previous,@Query("time_format") String time_format,
                   Callback<Graphfeed> callback);
     @GET("/feed")
     void next(@Query("fields")String fields,
@@ -26,6 +26,10 @@ public interface Fb  {
               @Query("access_token")String access_token,
               @Query("limit") String limit,
               @Query("until")String untill,
-              @Query("__paging_token")String paging_token,
+              @Query("__paging_token")String paging_token,@Query("time_format") String time_format,
               Callback<Graphfeed> callback);
+    @GET("/feed")
+    void feedWithLimit(@Query("fields")String fields,@Query("limit") int limit,
+                       @Query("access_token")String access_token,@Query("time_format") String time_format,
+                       Callback<Graphfeed> callback);
 }

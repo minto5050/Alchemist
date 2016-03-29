@@ -26,7 +26,8 @@ public class Boilerplate {
     Typeface fontPrimary,fontSecondary;
 
     public static Typeface getFontPrimary(Context context) {
-        File file=new File(context.getFilesDir()+"/fonts/aruna-Normal.ttf");
+        //File file=new File(context.getFilesDir()+"/fonts/aruna-Normal.ttf");
+        File file=new File(context.getFilesDir()+"/fonts/newshunt-bold.otf");
         if (!file.exists())
         {
             Boilerplate.copyAssets(context);
@@ -96,7 +97,7 @@ public class Boilerplate {
     }
 
     public static Typeface getFontSecondary(Context context) {
-        File file=new File(context.getFilesDir()+"/fonts/ML-NILA03.ttf");
+        File file=new File(context.getFilesDir()+"/fonts/newshunt-regular.otf");
         if (!file.exists())
         {
             Boilerplate.copyAssets(context);

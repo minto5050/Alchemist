@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -37,9 +38,14 @@ public class ReadActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read);
-         logger = AppEventsLogger.newLogger(this);
+        try {
+            FacebookSdk.sdkInitialize(ReadActivity.this);
+            logger = AppEventsLogger.newLogger(this);
 
-        logger.logEvent("ReadArticle");
+            logger.logEvent("ReadArticle");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         imageView = (ImageView) findViewById(R.id.img_read);
         content_text = (EditText) findViewById(R.id.read_content);
         content_text.setCustomSelectionActionModeCallback(new ActionCallbackText(content_text, ReadActivity.this,logger));
