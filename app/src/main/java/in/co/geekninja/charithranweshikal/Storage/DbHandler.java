@@ -19,8 +19,18 @@ import in.co.geekninja.dbgen.Engine;
  * Created by PS on 2/26/2016.
  */
 public class DbHandler extends SQLiteOpenHelper {
+    private static DbHandler sInstance;
     private final Context context;
+    public static synchronized DbHandler getInstance(Context context) {
 
+        // Use the application context, which will ensure that you
+        // don't accidentally leak an Activity's context.
+        // See this article for more information: http://bit.ly/6LRzfx
+        if (sInstance == null) {
+            sInstance = new DbHandler(context.getApplicationContext());
+        }
+        return sInstance;
+    }
     public DbHandler(Context context) {
         super(context, Database.name, null, Database.version);
         this.context=context;
@@ -39,6 +49,8 @@ public class DbHandler extends SQLiteOpenHelper {
         feedDb.add(new DbField(Database.FEED_ROW_SINCE,DbGen.TEXT));
         feedDb.add(new DbField(Database.FEED_ROW_UNTILL,DbGen.TEXT));
         feedDb.add(new DbField(Database.FEED_ROW_PAGING_TOKEN,DbGen.TEXT));
+        feedDb.add(new DbField(Database.FEED_ROW_USER_ID,DbGen.TEXT));
+        feedDb.add(new DbField(Database.FEED_ROW_CREATED_AT,DbGen.TEXT));
         feedDb.add(new DbField(Database.FEED_ROW_ID,DbGen.TEXT,true,false,true));
         String queryFeed=Engine.getQuery(DbGen.CREATE_TABLE,Database.TAB_FEED,feedDb);
         db.execSQL(queryFeed);
@@ -47,12 +59,15 @@ public class DbHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(Engine.getQuery(DbGen.DROP_TABLE,"Feed",null));
+        if (oldVersion==2) {
+            db.execSQL("ALTER TABLE " + Database.TAB_FEED + " ADD " + Database.FEED_ROW_CREATED_AT + " TEXT");
+            db.execSQL("ALTER TABLE " + Database.TAB_FEED + " ADD " + Database.FEED_ROW_USER_ID + " TEXT");
+        }
     }
     public boolean Insert(ContentValues values,String tableName){
         try {
             SQLiteDatabase db=this.getWritableDatabase();
-            db.insert(tableName,null,values);
+            db.insertOrThrow(tableName,null,values);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,7 +84,7 @@ public class DbHandler extends SQLiteOpenHelper {
                 Database.FEED_ROW_FULLIMG,
                 Database.FEED_ROW_DESC,
                 Database.FEED_ROW_THUMB,
-                Database.FEED_ROW_TITLE},null,null,null,null,null,null);
+                Database.FEED_ROW_TITLE,Database.FEED_ROW_CREATED_AT,Database.FEED_ROW_USER_ID},null,null,null,null,null,null);
         if (cur.moveToFirst())
         {
             do {

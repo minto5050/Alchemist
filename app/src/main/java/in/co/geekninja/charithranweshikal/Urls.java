@@ -5,5 +5,5 @@ package in.co.geekninja.charithranweshikal;
  */
 public class Urls {
 public static final String GrouypID="416238708555189";
-    public static final String Base="https://graph.facebook.com/v2.5/416238708555189";
+    public static final String Base="https://graph.facebook.com/v2.7/416238708555189";
 }

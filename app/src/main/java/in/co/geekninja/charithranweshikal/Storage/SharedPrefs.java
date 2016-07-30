@@ -14,7 +14,7 @@ public class SharedPrefs {
     public static String SINCE="since";
     SharedPreferences sp;
     static SharedPrefs s;
-    public static SharedPreferences getInstance(Context context)
+    public static synchronized SharedPreferences getInstance(Context context)
     {
         if (s==null)
             s=new SharedPrefs(context);

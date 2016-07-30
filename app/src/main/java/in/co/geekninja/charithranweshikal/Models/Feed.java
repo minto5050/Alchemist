@@ -26,6 +26,17 @@ public class Feed implements Serializable {
     @SerializedName("from")
     @Expose
     private From from;
+    @SerializedName("created_time")
+    @Expose
+    private String created_time;
+
+    public String getCreated_time() {
+        return created_time;
+    }
+
+    public void setCreated_time(String created_time) {
+        this.created_time = created_time;
+    }
 
     public From getFrom() {
         return from;

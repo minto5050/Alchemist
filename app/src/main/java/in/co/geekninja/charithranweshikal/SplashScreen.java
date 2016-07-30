@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -82,11 +83,12 @@ public class SplashScreen extends Activity implements FacebookCallback<LoginResu
                 if (!token.equals("NoN"))
                 {
                     Intent intent = new Intent(SplashScreen.this, FeedsActivity.class);
+                    intent.putExtra(SharedPrefs.TOKEN,token);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                    finish();
-                    Fetcher.startActionLimit(800,SplashScreen.this);
 
+                    Fetcher.startActionLimit(800,SplashScreen.this);
+                    finish();
 
                 }
                 else
@@ -158,10 +160,14 @@ public class SplashScreen extends Activity implements FacebookCallback<LoginResu
     @Override
     public void onSuccess(LoginResult loginResult) {
         String token=loginResult.getAccessToken().getToken();
-        SharedPrefs.getInstance(SplashScreen.this).edit().putString(SharedPrefs.TOKEN,token).apply();
-
-        finish();
-        startActivity(new Intent(SplashScreen.this,FeedsActivity.class));
+        Log.e("..",token);
+        if (!token.equals("U")) {
+            SharedPrefs.getInstance(SplashScreen.this).edit().putString(SharedPrefs.TOKEN, token).commit();
+            Intent feedsIntent = new Intent(SplashScreen.this, FeedsActivity.class);
+            feedsIntent.putExtra(SharedPrefs.TOKEN, token);
+            startActivity(feedsIntent);
+            finish();
+        }
     }
     SweetAlertDialog sweetAlertDialog;
     @Override

@@ -58,17 +58,24 @@ public class FeedsActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.feeds_activity);
+
+
         sp=SharedPrefs.getInstance(FeedsActivity.this);
-        token=sp.getString(SharedPrefs.TOKEN,"NoN");
+        if (getIntent().getExtras().containsKey(SharedPrefs.TOKEN))
+            token = getIntent().getStringExtra(SharedPrefs.TOKEN);
+        else
+            token=sp.getString(SharedPrefs.TOKEN,"NoN");
         since=sp.getString(SharedPrefs.SINCE,"NoN");
         logger = AppEventsLogger.newLogger(this);
         disclaimer=new SweetAlertDialog(FeedsActivity.this,SweetAlertDialog.CUSTOM_LAYOUT_TYPE);
         shown_disclaimer=sp.getBoolean(SharedPrefs.DISCLAIMER,false);
         mPullToRefreshView = (PullToRefreshView) findViewById(R.id.pull_to_refresh);
+
         if (!shown_disclaimer)
         {
-            mPullToRefreshView.setRefreshing(true);
 
+            mPullToRefreshView.setRefreshing(true);
+            look(token);
             TextView disc=new TextView(FeedsActivity.this);
             disc.setTypeface(Boilerplate.getFontPrimary(FeedsActivity.this));
             disc.setText(getString(R.string.disclaimer));
@@ -80,6 +87,7 @@ public class FeedsActivity extends FragmentActivity {
                 sp.edit().putBoolean(SharedPrefs.DISCLAIMER,true).apply();
                 }
             });
+
         }
         list_view=(RecyclerView)findViewById(R.id.list_view);
 
@@ -176,6 +184,7 @@ public class FeedsActivity extends FragmentActivity {
     protected void onPause() {
         super.onPause();
         unregisterReceiver(broadcast);
+        mPullToRefreshView.setRefreshing(false);
     }
 
     void look(String token) {
@@ -185,7 +194,7 @@ public class FeedsActivity extends FragmentActivity {
 
     void Initialize()
     {
-        DbHandler handler=new DbHandler(FeedsActivity.this);
+        DbHandler handler=DbHandler.getInstance(FeedsActivity.this);
         List<Feeds> feedse=handler.getFeeds();
         for (Feeds f:feedse)
         {
@@ -215,7 +224,6 @@ public class FeedsActivity extends FragmentActivity {
                     switch (intent.getAction()) {
                         case Fetcher.ACTION_NEXT:
                             adapter.addItem(feeds, FeedRecyclerAdapter.TOP);
-
                             break;
                         case Fetcher.ACTION_CURRENT:
                             Initialize();

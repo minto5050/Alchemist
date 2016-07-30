@@ -16,6 +16,8 @@ public class Database {
     public static final String FEED_ROW_PAGING_TOKEN = "pagingToken";
     public static final String FEED_ROW_UNTILL = "untill";
     public static final String FEED_ROW_SINCE = "since";
+    public static final String FEED_ROW_USER_ID = "user_id";
     public static String name="CharithramDb";
-    public static int version=2;
+    public static int version=3;//2
+    public static String FEED_ROW_CREATED_AT = "CreatedAt";
 }

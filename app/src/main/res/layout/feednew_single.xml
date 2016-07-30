@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:orientation="vertical">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/dark"
+        android:id="@+id/img_bg"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        />
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000"
+    >
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/img_feed"
+        android:layout_toEndOf="@+id/img_feed"
+        android:layout_marginLeft="3dp"
+        android:layout_marginStart="3dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical">
+    <TextView
+        android:textStyle="normal"
+        android:fontFamily="sans-serif-bold"
+        android:textSize="20sp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white_clouds"
+        android:text="Jessica Butler"
+        android:layout_above="@+id/txt_author"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:id="@+id/txt_title"/>
+    <TextView
+        android:textStyle="normal"
+        android:fontFamily="sans-serif-light"
+        android:textSize="15sp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white_clouds"
+        android:text="by Jessica Butler"
+        android:id="@+id/txt_author"/>
+    </LinearLayout>
+    <com.like.LikeButton
+        app:icon_type="heart"
+        app:icon_size="18dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="15dp"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/img_feed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:visibility="gone"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+
+        android:src="@drawable/placeholder"
+        />
+</RelativeLayout>
+</FrameLayout>

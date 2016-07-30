@@ -20,8 +20,10 @@
     </EditText>
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:gravity="center"
+            android:layout_height="252dp"
+
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
             android:id="@+id/img_read"/>
 
 

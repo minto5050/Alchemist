@@ -80,7 +80,7 @@ public class Fetcher extends IntentService {
         if (graphApi==null)
             graphApi=restAdapter.create(Fb.class);
         if (database==null)
-            database=new DbHandler(Fetcher.this);
+            database=DbHandler.getInstance(Fetcher.this);
         if (token.equals("NoN"))
             token= sp.getString(SharedPrefs.TOKEN,"NoN");
 
@@ -148,7 +148,7 @@ public class Fetcher extends IntentService {
      */
     private void handleActionCurrent() {
 
-        graphApi.feed("id,message,full_picture,picture,from,link,created_time","U", token, new Callback<Graphfeed>() {
+        graphApi.feed("id,message,full_picture,picture,from,link,created_time", token,"U", new Callback<Graphfeed>() {
             @Override
             public void success(Graphfeed graphfeed, Response response) {
                 processFeeds(graphfeed);
@@ -238,7 +238,13 @@ public class Fetcher extends IntentService {
                     feeds.setFrom(feed.getFrom().getName());
                     feeds.setLink(feed.getLink());
 
-                    String[] feedSplitted = feed.getMessage().split("\\r?\\n");
+                    String[] feedSplitted = new String[0];
+                    try {
+                        feedSplitted = feed.getMessage().split("\\r?\\n");
+                    } catch (Exception e) {
+                        feedSplitted = feed.getMessage().split("\n|\\.(?!\\d)|(?<!\\d)\\.");
+                        e.printStackTrace();
+                    }
                     feeds.setTitle(Boilerplate.getReleavent(feedSplitted, TITLE));
                     feeds.setDesc(Boilerplate.getReleavent(feedSplitted, SHORT_DESC));
                     values.put(Database.FEED_ROW_TITLE, feeds.getTitle());
@@ -248,6 +254,8 @@ public class Fetcher extends IntentService {
                     values.put(Database.FEED_ROW_LINK, feed.getLink());
                     values.put(Database.FEED_ROW_FROM, feed.getFrom().getName());
                     values.put(Database.FEED_ROW_ID, feed.getId());
+                    values.put(Database.FEED_ROW_CREATED_AT,feed.getCreated_time());
+                    values.put(Database.FEED_ROW_USER_ID,feed.getFrom().getId());
                     database.Insert(values, Database.TAB_FEED);
                 } catch (Exception e) {
                     e.printStackTrace();
