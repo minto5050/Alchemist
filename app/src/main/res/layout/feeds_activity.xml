@@ -1,9 +1,15 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".FeedsActivity">
-
+<android.support.v7.widget.SearchView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:queryHint="@string/action_search"
+    android:layout_alignParentTop="true"
+    android:id="@+id/search_bar"/>
     <com.yalantis.taurus.PullToRefreshView
         android:id="@+id/pull_to_refresh"
         android:layout_width="match_parent"
@@ -18,4 +24,4 @@
 
     </com.yalantis.taurus.PullToRefreshView>
 
-</RelativeLayout>
+</LinearLayout>

@@ -25,10 +25,28 @@ import java.util.Map;
  * Created by PS on 2/26/2016.
  */
 public class Boilerplate {
+    /**
+     * The constant SHORT_DESC.
+     */
     public static final int SHORT_DESC = 1;
+    /**
+     * The constant TITLE.
+     */
     public static final int TITLE = 2;
-    Typeface fontPrimary,fontSecondary;
+    /**
+     * The Font primary.
+     */
+    Typeface fontPrimary, /**
+     * The Font secondary.
+     */
+    fontSecondary;
 
+    /**
+     * Gets font primary.
+     *
+     * @param context the context
+     * @return the font primary
+     */
     public static Typeface getFontPrimary(Context context) {
         //File file=new File(context.getFilesDir()+"/fonts/aruna-Normal.ttf");
         File file=new File(context.getFilesDir()+"/fonts/newshunt-bold.otf");
@@ -43,21 +61,22 @@ public class Boilerplate {
         }
         return null;
     }
+
     /**
      * Stack Blur v1.0 from
      * http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html
      * Java Author: Mario Klingemann <mario at quasimondo.com>
      * http://incubator.quasimondo.com
-     *
+     * <p/>
      * created Feburary 29, 2004
      * Android port : Yahel Bouaziz <yahel at kayenko.com>
      * http://www.kayenko.com
      * ported april 5th, 2012
-     *
+     * <p/>
      * This is a compromise between Gaussian Blur and Box blur
      * It creates much better looking blurs than Box Blur, but is
      * 7x faster than my Gaussian Blur implementation.
-     *
+     * <p/>
      * I called it Stack Blur because this describes best how this
      * filter works internally: it creates a kind of moving stack
      * of colors whilst scanning through the image. Thereby it
@@ -66,10 +85,16 @@ public class Boilerplate {
      * colors on the topmost layer of the stack are either added on
      * or reduced by one, depending on if they are on the right or
      * on the left side of the stack.
-     *
+     * <p/>
      * If you are using this algorithm in your code please add
      * the following line:
      * Stack Blur Algorithm by Mario Klingemann <mario@quasimondo.com>
+     *
+     * @param sentBitmap the sent bitmap
+     * @param scale      the scale
+     * @param radius     the radius
+     * @return the bitmap
+     * @throws IllegalStateException the illegal state exception
      */
 
     public static  Bitmap fastblur(Bitmap sentBitmap, float scale, int radius) throws IllegalStateException {
@@ -284,15 +309,38 @@ public class Boilerplate {
             return (bitmap);
         }
     }
+
+    /**
+     * Gets releavent.
+     *
+     * @param feedSplitted the feed splitted
+     * @param type         the type
+     * @return the releavent
+     */
     public static String getReleavent(String feedSplitted,int type)
     {
         return getReleavent(feedSplitted.split("\\r?\\n"),type);
     }
+
+    /**
+     * Average color int [ ].
+     *
+     * @param bmp the bmp
+     * @return the int [ ]
+     */
     public static int[] averageColor(Bitmap bmp){
         int intArray[] = new int[bmp.getWidth()*bmp.getHeight()];
         bmp.getPixels(intArray, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
         return intArray;
     }
+
+    /**
+     * Gets releavent.
+     *
+     * @param feedSplitted the feed splitted
+     * @param TyPE         the ty pe
+     * @return the releavent
+     */
     public static String getReleavent(String[] feedSplitted, int TyPE) {
         List<String> array=new ArrayList<String>();
         if (feedSplitted.length==1)
@@ -330,6 +378,13 @@ public class Boilerplate {
         else
             return str.length;
     }
+
+    /**
+     * Export databse.
+     *
+     * @param databaseName the database name
+     * @param context      the context
+     */
     public   void exportDatabse(String databaseName, Context context) {
         try {
             File sd = Environment.getExternalStorageDirectory();
@@ -353,6 +408,14 @@ public class Boilerplate {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Gets url parameters.
+     *
+     * @param url the url
+     * @return the url parameters
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
     public static Map<String, List<String>> getUrlParameters(String url)
             throws UnsupportedEncodingException {
         Map<String, List<String>> params = new HashMap<String, List<String>>();
@@ -377,10 +440,21 @@ public class Boilerplate {
         return params;
     }
 
+    /**
+     * Sets font primary.
+     *
+     * @param fontPrimary the font primary
+     */
     public void setFontPrimary(Typeface fontPrimary) {
         this.fontPrimary = fontPrimary;
     }
 
+    /**
+     * Gets font secondary.
+     *
+     * @param context the context
+     * @return the font secondary
+     */
     public static Typeface getFontSecondary(Context context) {
         File file=new File(context.getFilesDir()+"/fonts/newshunt-regular.otf");
         if (!file.exists())
@@ -395,10 +469,20 @@ public class Boilerplate {
         return null;
     }
 
+    /**
+     * Sets font secondary.
+     *
+     * @param fontSecondary the font secondary
+     */
     public void setFontSecondary(Typeface fontSecondary) {
         this.fontSecondary = fontSecondary;
     }
 
+    /**
+     * Copy assets.
+     *
+     * @param context the context
+     */
     public static void copyAssets(Context context) {
         AssetManager assetManager = context.getAssets();
         String[] files = null;

@@ -27,6 +27,13 @@ public class FeedsAdapter extends ArrayAdapter<Feeds> {
     private final Context context;
     private final List<Feeds> items;
 
+    /**
+     * Instantiates a new Feeds adapter.
+     *
+     * @param context  the context
+     * @param resource the resource
+     * @param objects  the objects
+     */
     public FeedsAdapter(Context context, int resource, List<Feeds> objects) {
         super(context, resource, objects);
         this.context = context;

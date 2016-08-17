@@ -21,16 +21,37 @@ import in.co.geekninja.charithranweshikal.Misc.ActionCallbackText;
 import in.co.geekninja.charithranweshikal.Misc.Boilerplate;
 import in.co.geekninja.charithranweshikal.Misc.PicassoCache;
 
+/**
+ * The type Read activity.
+ */
 public class ReadActivity extends Activity {
+    /**
+     * The Image view.
+     */
     ImageView imageView;
+    /**
+     * The Content text.
+     */
     EditText content_text;
-    TextView author, original;
+    /**
+     * The Author.
+     */
+    TextView author, /**
+     * The Original.
+     */
+    original;
+    /**
+     * The Alert.
+     */
     SweetAlertDialog alert;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
+    /**
+     * The Logger.
+     */
     AppEventsLogger logger;
 
 

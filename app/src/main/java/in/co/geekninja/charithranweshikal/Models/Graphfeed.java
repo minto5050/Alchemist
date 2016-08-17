@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * The type Graphfeed.
+ */
 public class Graphfeed implements Serializable{
 
     @SerializedName("data")
@@ -20,36 +23,36 @@ public class Graphfeed implements Serializable{
     private Paging paging;
 
     /**
+     * Gets data.
      *
-     * @return
-     * The data
+     * @return The  data
      */
     public List<Feed> getData() {
         return data;
     }
 
     /**
+     * Sets data.
      *
-     * @param data
-     * The data
+     * @param data The data
      */
     public void setData(List<Feed> data) {
         this.data = data;
     }
 
     /**
+     * Gets paging.
      *
-     * @return
-     * The paging
+     * @return The  paging
      */
     public Paging getPaging() {
         return paging;
     }
 
     /**
+     * Sets paging.
      *
-     * @param paging
-     * The paging
+     * @param paging The paging
      */
     public void setPaging(Paging paging) {
         this.paging = paging;

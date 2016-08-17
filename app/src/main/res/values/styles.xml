@@ -11,7 +11,7 @@
     <style name="FullscreenTheme" parent="AppTheme">
         <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
         <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:windowBackground">@null</item>
+        <item name="android:windowBackground">@drawable/splash_theme</item>
         <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
         <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
     </style>
@@ -25,5 +25,8 @@
         <item name="android:textColor">@color/white_clouds</item>
         <item name="android:textStyle">normal</item>
         <item name="android:background">@drawable/flat_selector</item>
+    </style>
+    <style name="SplashTheme" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@drawable/splash_theme</item>
     </style>
 </resources>

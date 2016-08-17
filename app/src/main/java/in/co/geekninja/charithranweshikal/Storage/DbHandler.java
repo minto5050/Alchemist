@@ -11,6 +11,7 @@ import java.util.List;
 
 import in.co.geekninja.charithranweshikal.Adapters.Feeds;
 import in.co.geekninja.charithranweshikal.Services.Fetcher;
+import in.co.geekninja.charithranweshikal.Urls;
 import in.co.geekninja.dbgen.DbField;
 import in.co.geekninja.dbgen.DbGen;
 import in.co.geekninja.dbgen.Engine;
@@ -51,6 +52,7 @@ public class DbHandler extends SQLiteOpenHelper {
         feedDb.add(new DbField(Database.FEED_ROW_PAGING_TOKEN,DbGen.TEXT));
         feedDb.add(new DbField(Database.FEED_ROW_USER_ID,DbGen.TEXT));
         feedDb.add(new DbField(Database.FEED_ROW_CREATED_AT,DbGen.TEXT));
+        feedDb.add(new DbField(Database.FEED_ROW_IS_FAV,DbGen.TEXT,"no",false,false,true));
         feedDb.add(new DbField(Database.FEED_ROW_ID,DbGen.TEXT,true,false,true));
         String queryFeed=Engine.getQuery(DbGen.CREATE_TABLE,Database.TAB_FEED,feedDb);
         db.execSQL(queryFeed);
@@ -62,6 +64,10 @@ public class DbHandler extends SQLiteOpenHelper {
         if (oldVersion==2) {
             db.execSQL("ALTER TABLE " + Database.TAB_FEED + " ADD " + Database.FEED_ROW_CREATED_AT + " TEXT");
             db.execSQL("ALTER TABLE " + Database.TAB_FEED + " ADD " + Database.FEED_ROW_USER_ID + " TEXT");
+            db.execSQL("ALTER TABLE " + Database.TAB_FEED + " ADD " + Database.FEED_ROW_IS_FAV + " TEXT DEFAULT \"no\"");
+        }
+        else if (oldVersion==3){
+            db.execSQL("ALTER TABLE " + Database.TAB_FEED + " ADD " + Database.FEED_ROW_IS_FAV + " TEXT DEFAULT \"no\"");
         }
     }
     public boolean Insert(ContentValues values,String tableName){
@@ -84,7 +90,11 @@ public class DbHandler extends SQLiteOpenHelper {
                 Database.FEED_ROW_FULLIMG,
                 Database.FEED_ROW_DESC,
                 Database.FEED_ROW_THUMB,
-                Database.FEED_ROW_TITLE,Database.FEED_ROW_CREATED_AT,Database.FEED_ROW_USER_ID},null,null,null,null,null,null);
+                Database.FEED_ROW_TITLE,
+                Database.FEED_ROW_CREATED_AT,
+                Database.FEED_ROW_USER_ID,
+                Database.FEED_ROW_IS_FAV,
+                Database.FEED_ROW_ID},null,null,null,null,null,null);
         if (cur.moveToFirst())
         {
             do {
@@ -95,10 +105,24 @@ public class DbHandler extends SQLiteOpenHelper {
                 feed.setFull_image(cur.getString(cur.getColumnIndex(Database.FEED_ROW_FULLIMG)));
                 feed.setLink(cur.getString(cur.getColumnIndex(Database.FEED_ROW_LINK)));
                 feed.setFrom(cur.getString(cur.getColumnIndex(Database.FEED_ROW_FROM)));
+                feed.setCreatedDate(cur.getString(cur.getColumnIndex(Database.FEED_ROW_CREATED_AT)));
+                feed.setUser_image((Urls.GraphUrl+"/"+cur.getString(cur.getColumnIndex(Database.FEED_ROW_USER_ID))+"/picture?width=50&access_token="));
+                feed.setFavorite(cur.getString(cur.getColumnIndex(Database.FEED_ROW_IS_FAV)).equals("yes"));
+                feed.setId(cur.getString(cur.getColumnIndex(Database.FEED_ROW_ID)));
                 array.add(feed);
             }while (cur.moveToNext());
         }
         return array;
     }
 
+    public void setLiked(String feedRowId, boolean b) {
+        try {
+            ContentValues cv = new ContentValues();
+            cv.put(Database.FEED_ROW_IS_FAV,b?"yes":"no");
+            SQLiteDatabase db=this.getWritableDatabase();
+            db.update(Database.TAB_FEED,cv,Database.FEED_ROW_ID+" = ?",new String[]{feedRowId});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

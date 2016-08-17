@@ -6,6 +6,9 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 
+/**
+ * The type Paging.
+ */
 public class Paging implements Serializable{
 
     @SerializedName("previous")
@@ -16,36 +19,36 @@ public class Paging implements Serializable{
     private String next;
 
     /**
+     * Gets previous.
      *
-     * @return
-     * The previous
+     * @return The  previous
      */
     public String getPrevious() {
         return previous;
     }
 
     /**
+     * Sets previous.
      *
-     * @param previous
-     * The previous
+     * @param previous The previous
      */
     public void setPrevious(String previous) {
         this.previous = previous;
     }
 
     /**
+     * Gets next.
      *
-     * @return
-     * The next
+     * @return The  next
      */
     public String getNext() {
         return next;
     }
 
     /**
+     * Sets next.
      *
-     * @param next
-     * The next
+     * @param next The next
      */
     public void setNext(String next) {
         this.next = next;

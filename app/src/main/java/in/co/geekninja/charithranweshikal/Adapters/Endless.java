@@ -8,6 +8,11 @@ import com.commonsware.cwac.endless.EndlessAdapter;
  * Created by PS on 2/26/2016.
  */
 public class Endless extends EndlessAdapter {
+    /**
+     * Instantiates a new Endless.
+     *
+     * @param wrapped the wrapped
+     */
     public Endless(ListAdapter wrapped) {
         super(wrapped);
     }

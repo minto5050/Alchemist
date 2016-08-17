@@ -26,6 +26,13 @@ public class ActionCallbackText implements ActionMode.Callback {
     private final Context context;
     private final AppEventsLogger logger;
 
+    /**
+     * Instantiates a new Action callback text.
+     *
+     * @param bodyView the body view
+     * @param context  the context
+     * @param logger   the logger
+     */
     public ActionCallbackText(View bodyView,Context context,AppEventsLogger logger) {
         this.bodyView=bodyView;
         this.context=context;

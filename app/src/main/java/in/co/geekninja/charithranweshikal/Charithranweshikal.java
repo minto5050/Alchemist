@@ -13,6 +13,9 @@ import in.co.geekninja.charithranweshikal.Storage.SharedPrefs;
  * Created by PS on 2/24/2016.
  */
 public class Charithranweshikal extends Application {
+    /**
+     * The Shared preferences.
+     */
     SharedPreferences sharedPreferences;
     @Override
     public void onCreate() {

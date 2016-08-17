@@ -73,7 +73,7 @@ public class Fetcher extends IntentService {
 
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setLogLevel(RestAdapter.LogLevel.FULL)
-                .setEndpoint(Urls.Base)
+                .setEndpoint(Urls.getBase())
                 .build();
         if (sp==null)
             sp=SharedPrefs.getInstance(Fetcher.this);
@@ -165,12 +165,16 @@ public class Fetcher extends IntentService {
     }
     private void handleActionLimit(int limit) {
 
-        graphApi.feedWithLimit("id,message,full_picture,picture,from,link",limit, token,"U", new Callback<Graphfeed>() {
+        graphApi.feedWithLimit("id,message,full_picture,picture,from,link,created_time",limit, token,"U", new Callback<Graphfeed>() {
             @Override
             public void success(Graphfeed graphfeed, Response response) {
                 processFeeds(graphfeed);
+                if (graphfeed.getData().size()>15) {
+                    List<Feed> short_list = graphfeed.getData().subList(0, 15);
+                    graphfeed.setData(short_list);
+                }
                 Intent looked=new Intent(ACTION_PREVIOUS);
-                looked.putExtra("data",graphfeed);
+                //looked.putExtra("data",graphfeed);
                 sendBroadcast(looked);
             }
 

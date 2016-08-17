@@ -41,6 +41,9 @@ public class SplashScreen extends Activity implements FacebookCallback<LoginResu
     private CallbackManager callbackManager;
     private Button loginButton;
     private GoogleApiClient client;
+    /**
+     * The Shared preferences.
+     */
     SharedPreferences sharedPreferences;
     private String token;
 
@@ -51,11 +54,11 @@ public class SplashScreen extends Activity implements FacebookCallback<LoginResu
         boolean hasPermission = (ContextCompat.checkSelfPermission(SplashScreen.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
 
-        if (sweetAlertDialog==null)
-            sweetAlertDialog=new SweetAlertDialog(SplashScreen.this,SweetAlertDialog.NORMAL_TYPE);
-        sharedPreferences= SharedPrefs.getInstance(SplashScreen.this);
-        token=sharedPreferences.getString(SharedPrefs.TOKEN,"NoN");
-        TextView tv=(TextView)findViewById(R.id.fullscreen_content);
+        if (sweetAlertDialog == null)
+            sweetAlertDialog = new SweetAlertDialog(SplashScreen.this, SweetAlertDialog.NORMAL_TYPE);
+        sharedPreferences = SharedPrefs.getInstance(SplashScreen.this);
+        token = sharedPreferences.getString(SharedPrefs.TOKEN, "NoN");
+        TextView tv = (TextView) findViewById(R.id.fullscreen_content);
         tv.setTypeface(Boilerplate.getFontPrimary(SplashScreen.this));
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
@@ -80,20 +83,17 @@ public class SplashScreen extends Activity implements FacebookCallback<LoginResu
             public void run() {
                 // This method will be executed once the timer is over
                 // Start your app main activity
-                if (!token.equals("NoN"))
-                {
+                if (!token.equals("NoN")) {
                     Intent intent = new Intent(SplashScreen.this, FeedsActivity.class);
-                    intent.putExtra(SharedPrefs.TOKEN,token);
+                    intent.putExtra(SharedPrefs.TOKEN, token);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
 
-                    Fetcher.startActionLimit(800,SplashScreen.this);
+                    Fetcher.startActionLimit(800, SplashScreen.this);
                     finish();
 
-                }
-                else
-                {
-                 loginButton.setVisibility(View.VISIBLE);
+                } else {
+                    loginButton.setVisibility(View.VISIBLE);
                 }
 
 
@@ -159,8 +159,8 @@ public class SplashScreen extends Activity implements FacebookCallback<LoginResu
 
     @Override
     public void onSuccess(LoginResult loginResult) {
-        String token=loginResult.getAccessToken().getToken();
-        Log.e("..",token);
+        String token = loginResult.getAccessToken().getToken();
+        Log.e("..", token);
         if (!token.equals("U")) {
             SharedPrefs.getInstance(SplashScreen.this).edit().putString(SharedPrefs.TOKEN, token).commit();
             Intent feedsIntent = new Intent(SplashScreen.this, FeedsActivity.class);
@@ -169,7 +169,12 @@ public class SplashScreen extends Activity implements FacebookCallback<LoginResu
             finish();
         }
     }
+
+    /**
+     * The Sweet alert dialog.
+     */
     SweetAlertDialog sweetAlertDialog;
+
     @Override
     public void onCancel() {
 
@@ -185,6 +190,7 @@ public class SplashScreen extends Activity implements FacebookCallback<LoginResu
         sweetAlertDialog.setTitleText("Error Occured !");
         sweetAlertDialog.show();
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
