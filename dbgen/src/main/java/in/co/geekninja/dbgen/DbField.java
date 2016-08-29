@@ -57,13 +57,11 @@ public class DbField {
     }
 
     public DbField(String fieldName, String fieldType, int fieldLength) {
-
         FieldName = fieldName;
         FieldType = fieldType;
         FieldLength = fieldLength;
     }
     public DbField(String fieldName, String fieldType, String Default) {
-
         this.FieldName = fieldName;
         this.FieldType = fieldType;
         this.default_ = Default;

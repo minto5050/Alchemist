@@ -166,7 +166,10 @@ public class FeedRecyclerAdapter extends RecyclerView.Adapter<FeedRecyclerAdapte
             holder.time.setText("");
         }
     }
-
+    public void Sort(){
+        Collections.sort(feeds);
+        notifyDataSetChanged();
+    }
     /**
      * Add item.
      *
@@ -186,11 +189,12 @@ public class FeedRecyclerAdapter extends RecyclerView.Adapter<FeedRecyclerAdapte
             } else if (position == BOTTOM) {
                 feeds.add(feed);
             }
-            Collections.sort(feeds);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     @Override
     public int getItemCount() {
@@ -279,7 +283,9 @@ public class FeedRecyclerAdapter extends RecyclerView.Adapter<FeedRecyclerAdapte
                 final String filterPattern = constraint.toString().toLowerCase().trim();
 
                 for (final Feeds feed : originalList) {
-                    if (feed.getTitle_transliterated().contains(filterPattern)||feed.getTitle().contains(filterPattern)) {
+                    if ((feed.getTitle_transliterated()!=null&&feed.getTitle_transliterated().contains(filterPattern))
+                            ||(feed.getTitle()!=null&&feed.getTitle().contains(filterPattern))
+                            ||(feed.getFrom()!=null&&feed.getFrom().contains(filterPattern))) {
                         filteredList.add(feed);
                     }
                 }
@@ -295,5 +301,6 @@ public class FeedRecyclerAdapter extends RecyclerView.Adapter<FeedRecyclerAdapte
             adapter.feeds.addAll((ArrayList<Feeds>) results.values);
             adapter.notifyDataSetChanged();
         }
+
     }
 }

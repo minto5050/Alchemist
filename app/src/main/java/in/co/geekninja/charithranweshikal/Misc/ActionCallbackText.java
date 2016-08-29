@@ -22,6 +22,7 @@ import in.co.geekninja.charithranweshikal.R;
  * Created by PS on 3/1/2016.
  */
 public class ActionCallbackText implements ActionMode.Callback {
+
     private final View bodyView;
     private final Context context;
     private final AppEventsLogger logger;

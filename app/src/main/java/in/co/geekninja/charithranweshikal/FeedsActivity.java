@@ -14,6 +14,7 @@ import android.support.v7.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.yalantis.taurus.PullToRefreshView;
 
@@ -48,7 +49,7 @@ public class FeedsActivity extends FragmentActivity {
     private int previousTotal = 0;
     private boolean loading = true;
     private int visibleThreshold = 5;
-    int firstVisibleItem, visibleItemCount, totalItemCount;
+    int firstVisibleItem;
     LinearLayoutManager mLayoutManager;
     private SharedPreferences sp;
     private boolean shown_disclaimer = false;
@@ -78,7 +79,12 @@ public class FeedsActivity extends FragmentActivity {
         else
             token = sp.getString(SharedPrefs.TOKEN, "NoN");
         since = sp.getString(SharedPrefs.SINCE, "NoN");
-        logger = AppEventsLogger.newLogger(this);
+        try {
+            logger = AppEventsLogger.newLogger(this);
+        } catch (Exception e) {
+            FacebookSdk.sdkInitialize(FeedsActivity.this);
+            logger = AppEventsLogger.newLogger(this);
+        }
         disclaimer = new SweetAlertDialog(FeedsActivity.this, SweetAlertDialog.CUSTOM_LAYOUT_TYPE);
         shown_disclaimer = sp.getBoolean(SharedPrefs.DISCLAIMER, false);
         mPullToRefreshView = (PullToRefreshView) findViewById(R.id.pull_to_refresh);
@@ -176,7 +182,8 @@ public class FeedsActivity extends FragmentActivity {
 
             adapter.addItem(f, FeedRecyclerAdapter.BOTTOM);
         }
-        adapter.notifyDataSetChanged();
+        adapter.Sort();
+        //adapter.notifyDataSetChanged();
 
     }
 
@@ -199,6 +206,7 @@ public class FeedsActivity extends FragmentActivity {
                         feeds.setLink(feed.getLink());
                         feeds.setFrom(feed.getFrom().getName());
                         feeds.setDesc(feed.getMessage());
+                        feeds.setCreatedDate(feed.getCreated_time());
                         feeds.setTitle(Boilerplate.getReleavent(feed.getMessage(), Boilerplate.TITLE));
                         switch (intent.getAction()) {
                             case Fetcher.ACTION_NEXT:
@@ -215,10 +223,11 @@ public class FeedsActivity extends FragmentActivity {
                         e.printStackTrace();
                     }
 
-                    adapter.notifyDataSetChanged();
+
 
                     //  loading=true;
                 }
+                adapter.Sort();
             } catch (Exception e) {
                 e.printStackTrace();
             }
