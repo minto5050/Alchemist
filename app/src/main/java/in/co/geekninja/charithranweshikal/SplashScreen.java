@@ -8,11 +8,13 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -38,6 +40,8 @@ import in.co.geekninja.charithranweshikal.Storage.SharedPrefs;
  */
 public class SplashScreen extends Activity implements FacebookCallback<LoginResult> {
     private static final int REQUEST_WRITE_STORAGE = 112;
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 900;
+    private static final int MY_PERMISSIONS_REQUEST_READ_PHONESTATE = 901;
     private CallbackManager callbackManager;
     private Button loginButton;
     private GoogleApiClient client;
@@ -53,7 +57,44 @@ public class SplashScreen extends Activity implements FacebookCallback<LoginResu
         setContentView(R.layout.activity_splash_screen);
         boolean hasPermission = (ContextCompat.checkSelfPermission(SplashScreen.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+        boolean hasPermissionReadPhoneState = (ContextCompat.checkSelfPermission(SplashScreen.this,
+                Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED);
+        if (!hasPermission){
 
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(SplashScreen.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    Toast.makeText(SplashScreen.this,getString(R.string.explanation_write),Toast.LENGTH_SHORT).show();
+                    // Show an expanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+
+                    // No explanation needed, we can request the permission.
+
+                    ActivityCompat.requestPermissions(SplashScreen.this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+                }
+            }
+        if (hasPermissionReadPhoneState){
+            if (ActivityCompat.shouldShowRequestPermissionRationale(SplashScreen.this,
+                    Manifest.permission.ACCESS_NETWORK_STATE)) {
+                Toast.makeText(SplashScreen.this,getString(R.string.explanation_read_phone_state),Toast.LENGTH_SHORT).show();
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(SplashScreen.this,
+                        new String[]{Manifest.permission.ACCESS_NETWORK_STATE},
+                        MY_PERMISSIONS_REQUEST_READ_PHONESTATE);
+            }
+        }
         if (sweetAlertDialog == null)
             sweetAlertDialog = new SweetAlertDialog(SplashScreen.this, SweetAlertDialog.NORMAL_TYPE);
         sharedPreferences = SharedPrefs.getInstance(SplashScreen.this);
