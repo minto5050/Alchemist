@@ -34,6 +34,8 @@ import in.co.geekninja.charithranweshikal.Storage.SharedPrefs;
 import retrofit.RestAdapter;
 
 /**
+ * The activity that lists the facebook feeds for the user
+ * <br>Second screen in the application</br>
  * Created by PS on 2/26/2016.
  */
 public class FeedsActivity extends FragmentActivity {
@@ -198,31 +200,34 @@ public class FeedsActivity extends FragmentActivity {
             Graphfeed graphfeed = (Graphfeed) intent.getSerializableExtra("data");
 
             try {
-                for (Feed feed : graphfeed.getData()) {
-                    try {
-                        Feeds feeds = new Feeds();
-                        feeds.setImageUrl(feed.getPicture());
-                        feeds.setFull_image(feed.getFull_picture());
-                        feeds.setLink(feed.getLink());
-                        feeds.setFrom(feed.getFrom().getName());
-                        feeds.setDesc(feed.getMessage());
-                        feeds.setCreatedDate(feed.getCreated_time());
-                        feeds.setTitle(Boilerplate.getReleavent(feed.getMessage(), Boilerplate.TITLE));
-                        switch (intent.getAction()) {
-                            case Fetcher.ACTION_NEXT:
-                                adapter.addItem(feeds, FeedRecyclerAdapter.TOP);
-                                break;
-                            case Fetcher.ACTION_CURRENT:
-                                Initialize();
-                                break;
-                            case Fetcher.ACTION_PREVIOUS:
-                                adapter.addItem(feeds, FeedRecyclerAdapter.BOTTOM);
-                                break;
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
 
+                for (Feed feed : graphfeed.getData()) {
+                    if(feed.getMessage()!=null) {
+                        try {
+                            Feeds feeds = new Feeds();
+                            feeds.setImageUrl(feed.getPicture());
+                            feeds.setFull_image(feed.getFull_picture());
+                            feeds.setLink(feed.getLink());
+                            feeds.setFrom(feed.getFrom().getName());
+                            feeds.setDesc(feed.getMessage());
+                            feeds.setCreatedDate(feed.getCreated_time());
+                            feeds.setTitle(Boilerplate.getReleavent(feed.getMessage(), Boilerplate.TITLE));
+                            switch (intent.getAction()) {
+                                case Fetcher.ACTION_NEXT:
+                                    adapter.addItem(feeds, FeedRecyclerAdapter.TOP);
+                                    break;
+                                case Fetcher.ACTION_CURRENT:
+                                    Initialize();
+                                    break;
+                                case Fetcher.ACTION_PREVIOUS:
+                                    adapter.addItem(feeds, FeedRecyclerAdapter.BOTTOM);
+                                    break;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+
+                        }
+                    }
 
 
                     //  loading=true;

@@ -1,6 +1,7 @@
 package in.co.geekninja.charithranweshikal;
 
 /**
+ * The class for keeping all the public static data such as the Group ID and Graph Urls
  * Created by PS on 2/26/2016.
  */
 public class Urls {

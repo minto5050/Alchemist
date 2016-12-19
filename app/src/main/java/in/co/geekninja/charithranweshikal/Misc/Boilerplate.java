@@ -368,7 +368,7 @@ public class Boilerplate {
                     &&!line.contains("\\u2606\\u2606\\u2606\\u2606"))
                 return line;
         }
-        return null;
+        return feedSplitted[0];
     }
 
     private static int getSafeEnd(String s,int length) {
@@ -499,7 +499,7 @@ public class Boilerplate {
                 File outFile = new File(context.getFilesDir()+"/fonts/", filename);
                 out = new FileOutputStream(outFile);
                 copyFile(in, out);
-            } catch(IOException e) {
+            } catch(Exception e) {
                 Log.e("tag", "Failed to copy asset file: " + filename, e);
                 e.printStackTrace();
             }

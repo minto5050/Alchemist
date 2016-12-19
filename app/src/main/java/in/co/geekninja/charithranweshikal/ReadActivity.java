@@ -69,7 +69,7 @@ public class ReadActivity extends Activity {
         }
         imageView = (ImageView) findViewById(R.id.img_read);
         content_text = (EditText) findViewById(R.id.read_content);
-        content_text.setCustomSelectionActionModeCallback(new ActionCallbackText(content_text, ReadActivity.this,logger));
+        content_text.setCustomSelectionActionModeCallback(new ActionCallbackText(content_text, ReadActivity.this, logger));
         author = (TextView) findViewById(R.id.author_name);
         content_text.setTypeface(Boilerplate.getFontPrimary(ReadActivity.this));
         alert = new SweetAlertDialog(ReadActivity.this, SweetAlertDialog.ERROR_TYPE);
@@ -145,6 +145,7 @@ public class ReadActivity extends Activity {
         super.onResume();
         AppEventsLogger.activateApp(this);
     }
+
     @Override
     protected void onPause() {
         super.onPause();

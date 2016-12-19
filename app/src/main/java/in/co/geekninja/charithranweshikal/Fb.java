@@ -9,6 +9,7 @@ import retrofit.http.Query;
 
 /**
  * Created by PS on 2/26/2016.
+ * This interface is responsible for encapsulating all the web methods in the facebook graph API.
  */
 public interface Fb {
 

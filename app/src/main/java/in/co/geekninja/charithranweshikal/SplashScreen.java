@@ -130,7 +130,7 @@ public class SplashScreen extends Activity implements FacebookCallback<LoginResu
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
 
-                    Fetcher.startActionLimit(800, SplashScreen.this);
+                    Fetcher.startActionLimit(400, SplashScreen.this);
                     finish();
 
                 } else {

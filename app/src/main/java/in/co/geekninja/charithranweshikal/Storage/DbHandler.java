@@ -68,6 +68,9 @@ public class DbHandler extends SQLiteOpenHelper {
         }
         else if (oldVersion==3){
             db.execSQL("ALTER TABLE " + Database.TAB_FEED + " ADD " + Database.FEED_ROW_IS_FAV + " TEXT DEFAULT \"no\"");
+        } else if(oldVersion==4){
+            db.execSQL("DROP TABLE IF EXISTS "+Database.TAB_FEED);
+            onCreate(db);
         }
     }
     public boolean Insert(ContentValues values,String tableName){

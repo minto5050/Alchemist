@@ -19,6 +19,6 @@ public class Database {
     public static final String FEED_ROW_USER_ID = "user_id";
     public static final String FEED_ROW_IS_FAV = "is_Fav";
     public static String name="CharithramDb";
-    public static int version=4;//3;//2
+    public static int version=5;//4;//3;//2
     public static String FEED_ROW_CREATED_AT = "CreatedAt";
 }

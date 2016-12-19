@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -169,12 +170,12 @@ public class Fetcher extends IntentService {
             @Override
             public void success(Graphfeed graphfeed, Response response) {
                 processFeeds(graphfeed);
-                if (graphfeed.getData().size()>15) {
-                    List<Feed> short_list = graphfeed.getData().subList(0, 15);
-                    graphfeed.setData(short_list);
+                if (graphfeed.getData().size()>10) {
+                   // List<Feed> short_list = graphfeed.getData().subList(0, 10);
+                    graphfeed.setData(new ArrayList<>(graphfeed.getData().subList(0, 10)));
                 }
                 Intent looked=new Intent(ACTION_PREVIOUS);
-                //looked.putExtra("data",graphfeed);
+                looked.putExtra("data",graphfeed);
                 sendBroadcast(looked);
             }
 
@@ -234,6 +235,7 @@ public class Fetcher extends IntentService {
        }
         if (graphfeed.getData().size()>0) {
             for (Feed feed : graphfeed.getData()) {
+                if(feed.getMessage()!=null){
                 try {
                     ContentValues values = new ContentValues();
                     Feeds feeds = new Feeds();
@@ -263,6 +265,7 @@ public class Fetcher extends IntentService {
                     database.Insert(values, Database.TAB_FEED);
                 } catch (Exception e) {
                     e.printStackTrace();
+                }
                 }
             }
         }

@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import java.io.File;
 
 import in.co.geekninja.charithranweshikal.Misc.Boilerplate;
+import in.co.geekninja.charithranweshikal.Storage.Database;
 import in.co.geekninja.charithranweshikal.Storage.SharedPrefs;
 
 /**
@@ -29,7 +30,7 @@ public class Charithranweshikal extends Application {
                 Boilerplate.copyAssets(Charithranweshikal.this);
             }
         }
-
+        new Boilerplate().exportDatabse(Database.name, getApplicationContext());
     }
 
     @Override
