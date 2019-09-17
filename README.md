@@ -1,3 +1,4 @@
+The application and project is obselete now as the graph API methods are removed by facebook
 # Alchemist
 
 
